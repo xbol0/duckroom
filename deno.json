@@ -1,6 +1,7 @@
 {
   "tasks": {
     "start": "deno run --allow-net --allow-env main.ts",
-    "test:init": "deno run --allow-net test/init_bot.ts"
+    "test:init": "deno run --allow-net test/init_bot.ts",
+    "test:uninstall": "deno run --allow-net test/uninstall_bot.ts"
   }
 }
