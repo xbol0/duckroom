@@ -13,7 +13,9 @@ export async function adminAuth<T>(req: Request) {
   if (!nonce) throw new ErrorRes("Required Nonce", 403);
   if (!date) throw new ErrorRes("Required Date", 403);
 
-  if (/^[a-f0-9]{64}$/i.test(auth)) throw new ErrorRes("Invalid authorization");
+  if (/^[a-f0-9]{128}$/i.test(auth)) {
+    throw new ErrorRes("Invalid authorization");
+  }
   if (/^[a-f0-9]{64}$/i.test(hash)) throw new ErrorRes("Invalid hash");
   if (Date.now() - new Date(date).getTime() > 5000) {
     throw new ErrorRes("Request expired", 400);
