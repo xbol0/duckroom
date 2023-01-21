@@ -13,3 +13,5 @@ Router.set("GET/botinfo", admin.getBotInfo);
 
 Router.set("POST/webhook", webhook.webhook);
 Router.set("POST/init", admin.initBot);
+
+Router.set("DELETE/uninstall", admin.uninstall);

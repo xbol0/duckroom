@@ -8,4 +8,4 @@
 - `TG_TOKEN` telegram bot token
 - `TG_SECRET` telegram bot secret_token
 - `HOST` custom hostname
-- `BLOOM` bloom filters provider, currently only support deta base
+- `BLOOM_URL` bloom filters provider, currently only support deta base

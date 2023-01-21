@@ -14,7 +14,7 @@ export async function initBot(req: Request) {
   console.log("Get bot webhook info...");
   const info = await bot.getWebhookInfo();
 
-  console.log(`Webhook info: ${JSON.stringify(info)}`);
+  console.log(info);
   console.log("Update webhook info");
 
   await bot.setWebhook({
@@ -23,6 +23,7 @@ export async function initBot(req: Request) {
     max_connections: 60,
   });
 
+  console.log("Update bot commands");
   await bot.setMyCommands({
     commands: [
       { command: "help", description: "Get help messages." },
@@ -47,4 +48,9 @@ function verifyBody(input: unknown): input is AdminInitInput {
 
 export async function getBotInfo(_: Request) {
   return respond(await bot.getMe());
+}
+
+export async function uninstall(_: Request) {
+  await bot.resetWebhook();
+  return respond(null, 202);
 }

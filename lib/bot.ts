@@ -19,12 +19,24 @@ export function setWebhook(data: WebhookParams) {
   return POST("setWebhook", data);
 }
 
-export function resetWebhook() {
-  return POST("setWebhookInfo", {});
+export async function resetWebhook() {
+  console.log("Delete webhook");
+  await POST("deleteWebhook", {});
+
+  console.log("Delete default commands");
+  await deleteMyCommands({});
 }
 
 export function setMyCommands(data: TgCommandInput) {
   return POST("setMyCommands", data);
+}
+
+export function getMyCommands(data: Omit<TgCommandInput, "commands">) {
+  return POST("getMyCommands", data);
+}
+
+export function deleteMyCommands(data: Omit<TgCommandInput, "commands">) {
+  return POST("deleteMyCommands", data);
 }
 
 async function GET<T>(method: string): Promise<T> {
