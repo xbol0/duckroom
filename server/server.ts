@@ -1,4 +1,4 @@
-import { http, log } from "../deps.ts";
+import { http } from "../deps.ts";
 import { respond } from "./response.ts";
 import { Router } from "./router.ts";
 
@@ -6,7 +6,7 @@ export function start(port: number) {
   http.serve(async (req) => {
     const path = new URL(req.url).pathname;
     const key = req.method + path;
-    log(key);
+    console.log(key);
 
     const fn = Router.get(key);
 

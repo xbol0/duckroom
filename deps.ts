@@ -17,10 +17,6 @@ export function bytes(input: string | ArrayBuffer) {
   }
 }
 
-export function log(...args: unknown[]) {
-  console.log(`[${new Date().toISOString()}]`, ...args);
-}
-
 export class ErrorRes extends Error {
   status = 400;
 

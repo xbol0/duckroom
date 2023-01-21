@@ -1,4 +1,4 @@
-import { ErrorRes, log } from "../deps.ts";
+import { ErrorRes } from "../deps.ts";
 import { adminAuth } from "../lib/auth.ts";
 import { AdminInitInput } from "../types.ts";
 import * as bot from "../lib/bot.ts";
@@ -11,11 +11,11 @@ export async function initBot(req: Request) {
 
   const url = body.url || `${new URL(req.url).origin}/webhook`;
 
-  log("Get bot webhook info...");
+  console.log("Get bot webhook info...");
   const info = await bot.getWebhookInfo();
 
-  log(`Webhook info: ${JSON.stringify(info)}`);
-  log("Update webhook info");
+  console.log(`Webhook info: ${JSON.stringify(info)}`);
+  console.log("Update webhook info");
 
   await bot.setWebhook({
     url,
@@ -30,7 +30,7 @@ export async function initBot(req: Request) {
     ],
   });
 
-  log("Update webhook info success");
+  console.log("Update webhook info success");
 
   return respond(null, 202);
 }
