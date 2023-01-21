@@ -17,7 +17,7 @@ export async function adminAuth<T>(req: Request) {
     throw new ErrorRes("Invalid authorization");
   }
   if (!/^[a-f0-9]{64}$/i.test(hash)) throw new ErrorRes("Invalid hash");
-  if (Date.now() - new Date(date).getTime() > 5000) {
+  if (Date.now() - new Date(date).getTime() > 30000) {
     throw new ErrorRes("Request expired", 400);
   }
 
