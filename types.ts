@@ -42,6 +42,10 @@ export type TgWebhookInfo = {
   url: string;
   max_connections?: number;
 };
+export type TgCommandInput = {
+  commands: { command: string; description: string }[];
+  scope?: { type: string; chat_id: number; user_id: number };
+};
 export type TgUpdate = {
   update_id: number;
   message?: unknown;

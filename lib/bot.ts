@@ -1,6 +1,11 @@
 import { config } from "../config.ts";
 import { ErrorRes } from "../deps.ts";
-import { TgResponse, TgWebhookInfo, WebhookParams } from "../types.ts";
+import {
+  TgCommandInput,
+  TgResponse,
+  TgWebhookInfo,
+  WebhookParams,
+} from "../types.ts";
 
 export function getWebhookInfo() {
   return GET<TgWebhookInfo>("getWebhookInfo");
@@ -16,6 +21,10 @@ export function setWebhook(data: WebhookParams) {
 
 export function resetWebhook() {
   return POST("setWebhookInfo", {});
+}
+
+export function setMyCommands(data: TgCommandInput) {
+  return POST("setMyCommands", data);
 }
 
 async function GET<T>(method: string): Promise<T> {

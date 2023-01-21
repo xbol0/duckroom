@@ -15,17 +15,19 @@ export async function initBot(req: Request) {
   const info = await bot.getWebhookInfo();
 
   log(`Webhook info: ${JSON.stringify(info)}`);
-
-  if (url == info.url) {
-    log(`Webhook url is equal ${url}, skip initialize`);
-    return respond(null, 202);
-  }
-
   log("Update webhook info");
+
   await bot.setWebhook({
     url,
     secret_token: config.tgSecret,
     max_connections: 60,
+  });
+
+  await bot.setMyCommands({
+    commands: [
+      { command: "help", description: "Get help messages." },
+      { command: "info", description: "Get your profile." },
+    ],
   });
 
   log("Update webhook info success");
