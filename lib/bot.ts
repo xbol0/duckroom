@@ -11,7 +11,7 @@ export function getMe() {
 }
 
 export function setWebhook(data: WebhookParams) {
-  return POST("setWebhookInfo", data);
+  return POST("setWebhook", data);
 }
 
 export function resetWebhook() {

@@ -14,7 +14,7 @@ export async function initBot(req: Request) {
   log("Get bot webhook info...");
   const info = await bot.getWebhookInfo();
 
-  log(`Webhook info: ${info}`);
+  log(`Webhook info: ${JSON.stringify(info)}`);
 
   if (url == info.url) {
     log(`Webhook url is equal ${url}, skip initialize`);
