@@ -22,7 +22,6 @@ const sign = hex.encode(
   await ed25519.sign(bytes([digest, now, nonce].join("\n")), key),
 );
 
-console.log(digest, sign);
 const res = await fetch(url, {
   method: "POST",
   body,
