@@ -32,8 +32,18 @@ export async function ensurePublicKey(id: string) {
   const json = await res.json();
   console.log(json);
 
-  if (!("@context" in json) || json["@context"] instanceof Array) {
-    throw new Error("Invalid format, may not be an activitypub instance.");
+  if (typeof json !== "object" || json === null) {
+    throw new Error("Invalid format, may not be an activitypub instance. 1");
+  }
+  if (!("@context" in json)) {
+    throw new Error("Invalid format, may not be an activitypub instance. 2");
+  }
+  if (
+    json["@context"] !== AP.ActivityStream ||
+    !(json["@context"] instanceof Array ||
+      !(json["@context"].includes(AP.ActivityStream)))
+  ) {
+    throw new Error("Invalid format, may not be an activitypub instance. 3");
   }
 
   const data: Record<string, unknown> = { id };
