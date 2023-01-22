@@ -10,7 +10,7 @@ const Commands = new Map<
   ["bind", Account.bind],
   ["unbind", Account.unbind],
   ["me", Profile.getProfile],
-  ["nickname", Profile.getProfile],
+  ["nickname", Profile.nickname],
   ["refresh", System.refreshCommands],
 ]);
 
