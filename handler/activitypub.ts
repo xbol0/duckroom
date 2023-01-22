@@ -57,7 +57,7 @@ export async function outbox(req: Request) {
   if (typeof next === "string") {
     const list = await db.listOutbox(
       `${origin}/user?id=${id}`,
-      `${origin}/status?id=${next}`,
+      next ? `${origin}/status?id=${next}` : "",
     );
     const lastItem = list.pop()?.id;
 
