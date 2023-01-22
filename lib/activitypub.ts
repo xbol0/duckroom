@@ -164,8 +164,10 @@ function parseSignature(str: string) {
   if (!signSection) throw new Error("Invalid signature section");
 
   const algSection = arr.find((i) => i.startsWith('algorithm="'));
-  if (algSection && algSection !== "rsa-sha256") {
-    throw new Error("Unsupported signature method");
+  if (algSection) {
+    if (algSection.slice(11, -1) !== "rsa-sha256") {
+      throw new Error("Unsupported signature method");
+    }
   }
 
   const keyId = keySection.slice(7, -1);
