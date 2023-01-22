@@ -32,7 +32,7 @@ eg. /bind alice",
     const id = `@${name}@${u.hostname}`;
     await Bot.sendMessage({
       chat_id: msg.chat.id,
-      text: "Registered successful.\n\nHere is your ID: **" + id +
+      text: "Registered successful\\.\n\nHere is your ID: **" + id +
         "**, you can tell your friends to follow it.",
       parse_mode: "MarkdownV2",
     });
