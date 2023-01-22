@@ -108,9 +108,10 @@ export async function verifyInbox<T>(req: Request): Promise<T> {
 
   const buf = await req.arrayBuffer();
   const hash = new Uint8Array(await crypto.subtle.digest("SHA-256", buf));
-  if (digest !== "SHA-256" + base64.encode(hash)) {
-    throw new ErrorRes("Unmatched content hash.");
-  }
+  const hash64 = "SHA-256=" + base64.encode(hash);
+  console.log(hash64);
+
+  if (digest !== hash64) throw new ErrorRes("Unmatched content hash.");
 
   const signObj = parseSignature(originSign);
   console.log(signObj);
