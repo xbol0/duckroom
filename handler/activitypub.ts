@@ -30,9 +30,9 @@ export async function user(req: Request) {
 }
 
 export async function status(req: Request) {
-  const { id } = getId(req);
+  getId(req);
 
-  const res = await db.getOutbox(id);
+  const res = await db.getOutbox(req.url);
   if (!res) return respond(null, 404);
 
   return respond(res);
