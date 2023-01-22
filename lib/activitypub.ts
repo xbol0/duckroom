@@ -95,8 +95,13 @@ export async function verifyInbox<T>(req: Request): Promise<T> {
   const digest = req.headers.get("digest"),
     originSign = req.headers.get("signature"),
     date = req.headers.get("date"),
+    host = req.headers.get("host"),
     u = new URL(req.url);
 
+  if (host !== u.hostname) throw new ErrorRes("Forbidden");
+  if (!date || Date.now() - new Date(date).getTime() > 30000) {
+    throw new ErrorRes("Forbidden");
+  }
   if (!digest || !originSign) throw new ErrorRes("Forbidden");
   console.log(digest);
   console.log(originSign);
@@ -108,6 +113,8 @@ export async function verifyInbox<T>(req: Request): Promise<T> {
   }
 
   const signObj = parseSignature(originSign);
+  console.log(signObj);
+
   const owner = await getKeyOwner(signObj.keyId);
   await ensurePublicKey(owner);
   const actor = await db.getActor(owner);
@@ -120,8 +127,13 @@ export async function verifyInbox<T>(req: Request): Promise<T> {
     true,
     ["verify"],
   );
-  const strToSign =
-    `(request-target): post ${u.pathname}\nhost: ${u.hostname}\ndate: ${date}\ndigest: ${digest}`;
+  let strToSign = `(request-target): ${req.method.toLowerCase()} ${u.pathname}`;
+  const headersPart = signObj.headers.map((i) => `${i}: ${req.headers.get(i)}`)
+    .join("\n");
+  strToSign += "\n" + headersPart;
+
+  console.log(strToSign);
+
   const v = await crypto.subtle.verify(
     {
       name: "RSA-PSS",
@@ -141,10 +153,23 @@ export async function verifyInbox<T>(req: Request): Promise<T> {
 
 function parseSignature(str: string) {
   const arr = str.trim().split(",");
-  if (arr.length !== 3) throw new Error("Invalid Signature");
-  const keyId = arr[0].slice(7, -1);
-  const sign = base64.decode(arr[2].slice(11, -1));
-  const headers = arr[1].split(" ").slice(1);
+  const keySection = arr.find((i) => i.startsWith('keyId="'));
+  if (!keySection) throw new Error("Invalid keyId section");
+
+  const headersSection = arr.find((i) => i.startsWith('headers="'));
+  if (!headersSection) throw new Error("Invalid headers section");
+
+  const signSection = arr.find((i) => i.startsWith('signature="'));
+  if (!signSection) throw new Error("Invalid signature section");
+
+  const algSection = arr.find((i) => i.startsWith('algorithm="'));
+  if (algSection && algSection !== "rsa-sha256") {
+    throw new Error("Unsupported signature method");
+  }
+
+  const keyId = keySection.slice(7, -1);
+  const sign = base64.decode(signSection.slice(11, -1));
+  const headers = headersSection.split(" ").slice(1);
 
   return { keyId, headers, sign };
 }
