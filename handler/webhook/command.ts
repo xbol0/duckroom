@@ -1,6 +1,7 @@
 import { TgMessage } from "../../types.ts";
 import * as Account from "../../app/account.ts";
 import * as Bot from "../../lib/bot.ts";
+import { escapeV2 } from "../../lib/tg_util.ts";
 
 const Commands = new Map<
   string,
@@ -32,8 +33,8 @@ eg. /bind alice",
     const id = `@${name}@${u.hostname}`;
     await Bot.sendMessage({
       chat_id: msg.chat.id,
-      text: "Registered successful\\.\n\nHere is your ID: **" + id +
-        "**, you can tell your friends to follow it.",
+      text: "Registered successful\\.\n\nHere is your ID: **" + escapeV2(id) +
+        "**, you can tell your friends to follow it\\.",
       parse_mode: "MarkdownV2",
     });
 
