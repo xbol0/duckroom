@@ -128,28 +128,29 @@ export async function verifyInbox<T>(req: Request): Promise<T> {
     true,
     ["verify"],
   );
-  let strToSign = `(request-target): ${req.method.toLowerCase()} ${u.pathname}`;
+  let strToSign = `(request-target): ${req.method.toLowerCase()} ${
+    u.pathname + u.search
+  }`;
   const headersPart = signObj.headers.map((i) => `${i}: ${req.headers.get(i)}`)
     .join("\n");
   strToSign += "\n" + headersPart;
 
   console.log(strToSign);
 
-  const v = await crypto.subtle.sign(
+  const v = await crypto.subtle.verify(
     {
       name: "RSA-PSS",
       hash: "SHA-256",
       saltLength: 32,
     },
     key,
+    signObj.sign,
     new TextEncoder().encode(strToSign),
   );
-  const v64 = base64.encode(v);
-  console.log(v64);
 
-  // if (!v) {
-  // throw new ErrorRes("Unverified signature");
-  // }
+  if (!v) {
+    throw new ErrorRes("Unverified signature");
+  }
   return JSON.parse(new TextDecoder().decode(buf)) as T;
 }
 
