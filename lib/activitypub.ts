@@ -69,7 +69,7 @@ export async function ensurePublicKey(id: string) {
       "sharedInbox" in json.endpoints &&
       typeof json.endpoints.sharedInbox === "string"
     ) {
-      data.shared_inbox = json.endpoints.shared_inbox;
+      data.shared_inbox = json.endpoints.sharedInbox;
     }
   }
 
