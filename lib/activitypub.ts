@@ -82,13 +82,15 @@ export async function ensurePublicKey(id: string) {
       const str = json.publicKey.publicKeyPem.trim().split("\n").slice(1, -1)
         .join("");
       const raw = base64.decode(str);
-      data.public_key = await crypto.subtle.importKey(
+      const pkey = await crypto.subtle.importKey(
         "spki",
         raw,
         { name: "RSA-PSS", hash: "SHA-256" },
         true,
         ["verify"],
       );
+      const key = await crypto.subtle.exportKey("raw", pkey);
+      data.public_key = new Uint8Array(key);
     }
   }
 
