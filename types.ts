@@ -11,6 +11,7 @@ export interface DataProvider {
   getUserByTgid(id: number): Promise<User | null>;
   getUserByName(name: string): Promise<User | null>;
   createUser(input: CreateUser): Promise<void>;
+  delUserByTgid(id: number): Promise<void>;
 }
 
 export type MigrationFn = (db: pg.PoolClient) => Promise<unknown>;

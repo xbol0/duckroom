@@ -106,4 +106,10 @@ avatar) VALUES ($1,$2,$3,$4,$5,$6) ON CONFLICT DO NOTHING",
       );
     });
   }
+
+  async delUserByTgid(id: number) {
+    await this.use((db) =>
+      db.queryArray("DELETE FROM accounts WHERE tg_id=$1", [id])
+    );
+  }
 }

@@ -22,3 +22,10 @@ export async function createAccount(
     private_key: k.privateKey,
   });
 }
+
+export async function delAccount(id: number) {
+  const e = await db.getUserByTgid(id);
+  if (!e) throw new ErrorRes(`Telegram ID ${id} does not exists`);
+
+  await db.delUserByTgid(id);
+}

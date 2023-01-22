@@ -1,50 +1,13 @@
 import { TgMessage } from "../../types.ts";
-import * as Account from "../../app/account.ts";
-import * as Bot from "../../lib/bot.ts";
-import { escapeV2 } from "../../lib/tg_util.ts";
+import * as Account from "../command/account.ts";
 
 const Commands = new Map<
   string,
   (c: string, m: TgMessage, q: Request) => unknown
->();
-
-Commands.set("bind", async (content, msg, req) => {
-  const name = content.trim();
-  if (name.length === 0) {
-    //
-    await Bot.sendMessage({
-      chat_id: msg.chat.id,
-      text:
-"No username specified, please send as this format: /bind [username]. \
-eg. /bind alice",
-    });
-    return;
-  }
-
-  try {
-    await Account.createAccount({
-      name,
-      display_name: name,
-      avatar: "",
-      tg_id: msg.from.id,
-    });
-
-    const u = new URL(req.url);
-    const id = `@${name}@${u.hostname}`;
-    await Bot.sendMessage({
-      chat_id: msg.chat.id,
-      text: "Registered successful\\.\n\nHere is your ID: **" + escapeV2(id) +
-        "**, you can tell your friends to follow it\\.",
-      parse_mode: "MarkdownV2",
-    });
-
-    // TODO: Update this user's commands
-  } catch (err) {
-    console.error(err);
-
-    await Bot.sendMessage({ chat_id: msg.chat.id, text: err.message });
-  }
-});
+>([
+  ["bind", Account.bind],
+  ["unbind", Account.unbind],
+]);
 
 export async function handleCommand(
   cmd: string,
