@@ -19,9 +19,12 @@ export async function getFile(req: Request) {
     );
 
     const name = data.file_path.split("/").pop();
-    res.headers.set("content-disposition", `attachment; filename="${name}"`);
 
-    return res;
+    return respond(res.body, 200, {
+      "content-disposition": `attachment; filename="${name}"`,
+      "content-type": res.headers.get("content-type") ||
+        "application/octet-stream",
+    });
   } catch (err) {
     console.error(err);
 
