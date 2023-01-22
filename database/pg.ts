@@ -4,6 +4,7 @@ import {
   DataProvider,
   MigrationFn,
   OutboxInput,
+  StatusItem,
   User,
 } from "../types.ts";
 import { Migrations } from "./pg_migrations.ts";
@@ -133,5 +134,18 @@ avatar) VALUES ($1,$2,$3,$4,$5,$6) ON CONFLICT DO NOTHING",
         [data.id, data.actor, data.to, data.cc, data.object, data.type],
       )
     );
+  }
+
+  async getOutbox(id: string) {
+    return await this.use(async (db) => {
+      const res = await db.queryObject(
+        "SELECT * FROM outbox WHERE id=$1 LIMIT 1",
+        [id],
+      );
+
+      if (!res.rows.length) return null;
+
+      return res.rows[0] as StatusItem;
+    });
   }
 }

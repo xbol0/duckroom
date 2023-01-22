@@ -11,12 +11,12 @@ export async function handleOutbox(msg: TgMessage, req: Request) {
   if (!s) return;
 
   const u = new URL(req.url);
-  const id = newId();
+  const id = `${u.origin}/status?id=${newId()}`;
 
   async function answerMessage() {
     await Bot.sendMessage({
       chat_id: msg.chat.id,
-      text: `Your post was created: ${u.origin}/status?id=${id}`,
+      text: `Your post was created: ${id}`,
     });
   }
 
@@ -24,11 +24,11 @@ export async function handleOutbox(msg: TgMessage, req: Request) {
     // Text only message
     const data = {
       type: "Create",
-      actor: s.name,
+      actor: `${u.origin}/user?id=${s.name}`,
       to: [`${u.origin}/followers?id=${s.name}`],
       cc: [AP.ActivityStreamPublic],
       object: {
-        id: `${u.origin}/status?id=${id}`,
+        id,
         type: "Note",
         published: new Date().toISOString(),
         attributedTo: `${u.origin}/user?id=${s.name}`,

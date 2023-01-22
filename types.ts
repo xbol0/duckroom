@@ -19,6 +19,7 @@ export interface DataProvider {
   ): Promise<void>;
 
   addOutbox(data: OutboxInput): Promise<void>;
+  getOutbox(id: string): Promise<StatusItem | null>;
 }
 
 export type MigrationFn = (db: pg.PoolClient) => Promise<unknown>;
@@ -66,3 +67,5 @@ export type OutboxInput = {
   type: string;
   object: unknown;
 };
+
+export type StatusItem = OutboxInput & { created_at: Date };
