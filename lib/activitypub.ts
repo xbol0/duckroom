@@ -108,7 +108,7 @@ export async function verifyInbox<T>(req: Request): Promise<T> {
 
   const buf = await req.arrayBuffer();
   const hash = new Uint8Array(await crypto.subtle.digest("SHA-256", buf));
-  if (digest.slice(-64).toLowerCase() !== hex.encode(hash).toLowerCase()) {
+  if (digest !== "SHA-256" + base64.encode(hash)) {
     throw new ErrorRes("Unmatched content hash.");
   }
 
