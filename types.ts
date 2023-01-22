@@ -22,6 +22,8 @@ export interface DataProvider {
 
   addOutbox(data: OutboxInput): Promise<void>;
   getOutbox(id: string): Promise<StatusItem | null>;
+  getOutboxTotal(id: string): Promise<number>;
+  listOutbox(id: string, next: string): Promise<StatusItem[]>;
 }
 
 export type MigrationFn = (db: pg.PoolClient) => Promise<unknown>;

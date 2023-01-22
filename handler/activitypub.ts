@@ -1,6 +1,7 @@
 import { db } from "../database/mod.ts";
 import { ErrorRes } from "../deps.ts";
 import { respond } from "../server/response.ts";
+import * as AP from "../constant/activitypub.ts";
 
 export async function user(req: Request) {
   const { id, origin } = getId(req);
@@ -39,11 +40,45 @@ export async function status(req: Request) {
 }
 
 export async function inbox(req: Request) {
+  const json = await req.json();
+
+  console.log(json);
   return respond(null, 202);
 }
 
 export async function outbox(req: Request) {
-  return respond(null, 202);
+  const { id, origin } = getId(req);
+
+  const u = new URL(req.url);
+  const next = u.searchParams.get("next");
+
+  const total = await db.getOutboxTotal(`${origin}/user?id=${id}`);
+
+  if (typeof next === "string") {
+    const list = await db.listOutbox(id, next);
+    const lastItem = list.pop()?.id;
+
+    return respond({
+      "@context": ["https://www.w3.org/ns/activitystreams"],
+      type: "OrderedCollectionPage",
+      totalItems: total,
+      id: `${origin}/outbox?id=${id}?key=`,
+      orderedItems: list,
+      next: list.length
+        ? `${origin}/outbox?id=${id}?next=${
+          lastItem && new URL(lastItem).searchParams.get("id")
+        }`
+        : void 0,
+    });
+  } else {
+    return respond({
+      "@context": [AP.ActivityStream],
+      type: "OrderedCollection",
+      totalItems: total,
+      id: `${origin}/outbox?id=${id}`,
+      first: `${origin}/outbox?id=${id}?next=`,
+    });
+  }
 }
 
 function getId(req: Request) {

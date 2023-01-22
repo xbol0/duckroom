@@ -15,10 +15,10 @@ Router.set("GET/botinfo", admin.getBotInfo);
 Router.set("GET/file", file.getFile);
 Router.set("GET/user", ap.user);
 Router.set("GET/status", ap.status);
-Router.set("GET/inbox", ap.inbox);
 Router.set("GET/outbox", ap.outbox);
 
 Router.set("POST/webhook", webhook.webhook);
 Router.set("POST/init", admin.initBot);
+Router.set("POST/inbox", ap.inbox);
 
 Router.set("DELETE/uninstall", admin.uninstall);

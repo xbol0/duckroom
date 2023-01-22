@@ -161,4 +161,31 @@ avatar) VALUES ($1,$2,$3,$4,$5,$6) ON CONFLICT DO NOTHING",
       return res.rows[0] as StatusItem;
     });
   }
+
+  async getOutboxTotal(id: string) {
+    return await this.use(async (db) => {
+      const res = id
+        ? await db.queryArray("SELECT count(*) FROM outbox WHERE name=$1", [id])
+        : await db.queryArray("SELECT count(*) FROM outbox");
+      return res.rows[0][0] as number;
+    });
+  }
+
+  async listOutbox(id: string, next: string) {
+    return await this.use(async (db) => {
+      const res = next
+        ? await db.queryObject(
+'SELECT id,actor,"type","to","cc","object" FROM outbox \
+WHERE actor=$1 ORDER BY created_at DESC LIMIT 10',
+          [id],
+        )
+        : await db.queryObject(
+'SELECT id,actor,"type","to","cc","object" FROM outbox \
+WHERE actor=$1 AND id>$2 ORDER BY created_at DESC LIMIT 10',
+          [id, next],
+        );
+
+      return res.rows as StatusItem[];
+    });
+  }
 }
