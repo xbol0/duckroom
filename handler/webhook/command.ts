@@ -11,6 +11,7 @@ const Commands = new Map<
   ["unbind", Account.unbind],
   ["me", Profile.getProfile],
   ["nickname", Profile.nickname],
+  ["avatar", Profile.avatar],
   ["refresh", System.refreshCommands],
 ]);
 

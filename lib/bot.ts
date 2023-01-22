@@ -1,6 +1,6 @@
 import { config } from "../config.ts";
 import { ErrorRes } from "../deps.ts";
-import { SendMessageParams } from "../tg_types.ts";
+import { SendMessageParams, SendPhotoParams, TgFile } from "../tg_types.ts";
 import {
   TgCommandInput,
   TgResponse,
@@ -42,6 +42,14 @@ export function deleteMyCommands(data: Omit<TgCommandInput, "commands">) {
 
 export function sendMessage(data: SendMessageParams) {
   return POST("sendMessage", data);
+}
+
+export function getFile(id: string): Promise<TgFile> {
+  return POST("getFile", { file_id: id });
+}
+
+export function sendPhoto(data: SendPhotoParams) {
+  return POST("sendPhoto", data);
 }
 
 async function GET<T>(method: string): Promise<T> {

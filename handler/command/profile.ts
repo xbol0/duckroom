@@ -59,3 +59,27 @@ export async function nickname(content: string, msg: TgMessage, _: Request) {
       ".\n\nYou can change it with /nickname [new] command.",
   });
 }
+
+export async function avatar(_c: string, msg: TgMessage, _: Request) {
+  const s = await getSession(msg);
+
+  if (msg.photo && msg.photo.length) {
+    const photos = [...new Set(msg.photo.map((i) => i.file_id))];
+    const fileId = photos[0];
+    console.log(`User ${msg.from.id} update avatar, file_id: ${fileId}`);
+
+    await db.updateUserMeta(msg.from.id, "avatar", fileId);
+    console.log(`Update user ${msg.from.id} successfully.`);
+    return;
+  }
+
+  if (s!.avatar) {
+    await Bot.sendPhoto({ photo: s!.avatar, chat_id: msg.chat.id });
+  } else {
+    await Bot.sendMessage({
+      chat_id: msg.chat.id,
+      text:
+        "You don't have set an avatar, send a picture with command /avatar to set an avatar.",
+    });
+  }
+}

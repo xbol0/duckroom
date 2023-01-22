@@ -29,7 +29,25 @@ export type TgMessage = {
   from: TgUser;
   chat: TgChat;
   text?: string;
-  entities: TgEntity[];
+  caption?: string;
+  entities?: TgEntity[];
+  caption_entities?: TgEntity[];
+  photo?: TgPhotoSize[];
+};
+
+export type TgPhotoSize = {
+  file_id: string;
+  file_unique_id: string;
+  width: number;
+  height: number;
+  file_size?: number;
+};
+
+export type TgFile = {
+  file_id: string;
+  file_unique_id: string;
+  file_size?: number;
+  file_path?: string;
 };
 
 export type TgUser = {
@@ -58,4 +76,14 @@ export type SendMessageParams = {
   parse_mode?: string;
   entities?: TgEntity[];
   reply_markup?: unknown;
+};
+
+export type SendPhotoParams = {
+  chat_id: number;
+  photo: string;
+  caption?: string;
+  parse_mode?: string;
+  reply_markup?: unknown;
+  has_spoiler?: boolean;
+  caption_entities?: TgEntity[];
 };

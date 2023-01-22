@@ -17,11 +17,23 @@ export async function webhook(req: Request) {
   const msg = json.message;
   if (!msg) return respond(null, 204);
   if (
-    msg.entities.length && msg.entities.some((i) => i.type === "bot_command")
+    msg.entities?.length && msg.entities.some((i) => i.type === "bot_command")
   ) {
     const item = msg.entities.find((i) => i.type === "bot_command")!;
     const command = msg.text!.slice(item.offset + 1, item.length + item.offset);
     const content = msg.text!.slice(item.length + 1);
+
+    queueMicrotask(() => handleCommand(command, content, msg, req));
+  } else if (
+    msg.caption_entities?.length &&
+    msg.caption_entities.some((i) => i.type === "bot_command")
+  ) {
+    const item = msg.caption_entities.find((i) => i.type === "bot_command")!;
+    const command = msg.caption!.slice(
+      item.offset + 1,
+      item.length + item.offset,
+    );
+    const content = msg.caption!.slice(item.length + 1);
 
     queueMicrotask(() => handleCommand(command, content, msg, req));
   } else {
