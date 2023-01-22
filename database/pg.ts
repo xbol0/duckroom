@@ -165,7 +165,9 @@ avatar) VALUES ($1,$2,$3,$4,$5,$6) ON CONFLICT DO NOTHING",
   async getOutboxTotal(id: string) {
     return await this.use(async (db) => {
       const res = id
-        ? await db.queryArray("SELECT count(*) FROM outbox WHERE name=$1", [id])
+        ? await db.queryArray("SELECT count(*) FROM outbox WHERE actor=$1", [
+          id,
+        ])
         : await db.queryArray("SELECT count(*) FROM outbox");
       return res.rows[0][0] as number;
     });
