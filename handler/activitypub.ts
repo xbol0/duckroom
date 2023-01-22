@@ -65,10 +65,10 @@ export async function outbox(req: Request) {
       "@context": [AP.ActivityStream],
       type: "OrderedCollectionPage",
       totalItems: total,
-      id: `${origin}/outbox?id=${id}?key=`,
+      id: `${origin}/outbox?id=${id}&next=`,
       orderedItems: list,
       next: list.length
-        ? `${origin}/outbox?id=${id}?next=${
+        ? `${origin}/outbox?id=${id}&next=${
           lastItem && new URL(lastItem).searchParams.get("id")
         }`
         : void 0,
