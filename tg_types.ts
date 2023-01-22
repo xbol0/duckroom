@@ -76,6 +76,7 @@ export type SendMessageParams = {
   parse_mode?: string;
   entities?: TgEntity[];
   reply_markup?: unknown;
+  disable_web_page_preview?: boolean;
 };
 
 export type SendPhotoParams = {

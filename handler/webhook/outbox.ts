@@ -17,6 +17,7 @@ export async function handleOutbox(msg: TgMessage, req: Request) {
     await Bot.sendMessage({
       chat_id: msg.chat.id,
       text: `Your post was created: ${id}`,
+      disable_web_page_preview: true,
     });
   }
 
