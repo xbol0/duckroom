@@ -7,6 +7,7 @@ export function start(port: number) {
     const path = new URL(req.url).pathname;
     const key = req.method + path;
     console.log(req.method, req.url);
+    console.log(req.headers.get("user-agent"));
 
     const fn = Router.get(key);
 
