@@ -11,6 +11,8 @@ export function respond(
     return new Response(null, { status, headers });
   } else if (data instanceof Response) {
     return data;
+  } else if (data instanceof ReadableStream) {
+    return new Response(data, { status, headers });
   }
 
   return new Response(JSON.stringify(data), {
