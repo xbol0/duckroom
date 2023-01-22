@@ -209,7 +209,7 @@ FROM actors WHERE id=$1 LIMIT 1",
   async setActor(data: Actor) {
     await this.use((db) =>
       db.queryArray(
-"INSERT INTO outbox (id,username,nickname,inbox,outbox,shared_inbox,public_key) VALUES \
+"INSERT INTO actors (id,username,nickname,inbox,outbox,shared_inbox,public_key) VALUES \
 ($1,$2,$3,$4,$5,$6,$7) ON CONFLICT (id) DO UPDATE SET nickname=$3,public_key=$7",
         [
           data.id,
