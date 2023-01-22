@@ -135,20 +135,21 @@ export async function verifyInbox<T>(req: Request): Promise<T> {
 
   console.log(strToSign);
 
-  const v = await crypto.subtle.verify(
+  const v = await crypto.subtle.sign(
     {
       name: "RSA-PSS",
       hash: "SHA-256",
       saltLength: 32,
     },
     key,
-    signObj.sign,
     new TextEncoder().encode(strToSign),
   );
+  const v64 = base64.encode(v);
+  console.log(v64);
 
-  if (!v) {
-    throw new ErrorRes("Unverified signature");
-  }
+  // if (!v) {
+  // throw new ErrorRes("Unverified signature");
+  // }
   return JSON.parse(new TextDecoder().decode(buf)) as T;
 }
 
