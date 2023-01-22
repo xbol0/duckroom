@@ -52,14 +52,14 @@ export async function outbox(req: Request) {
   const u = new URL(req.url);
   const next = u.searchParams.get("next");
 
-  const total = await db.getOutboxTotal(`${origin}/user?id=${id}`);
+  const total = Number(await db.getOutboxTotal(`${origin}/user?id=${id}`));
 
   if (typeof next === "string") {
     const list = await db.listOutbox(id, next);
     const lastItem = list.pop()?.id;
 
     return respond({
-      "@context": ["https://www.w3.org/ns/activitystreams"],
+      "@context": [AP.ActivityStream],
       type: "OrderedCollectionPage",
       totalItems: total,
       id: `${origin}/outbox?id=${id}?key=`,
