@@ -1,5 +1,11 @@
 import { pg } from "../deps.ts";
-import { CreateUser, DataProvider, MigrationFn, User } from "../types.ts";
+import {
+  CreateUser,
+  DataProvider,
+  MigrationFn,
+  OutboxInput,
+  User,
+} from "../types.ts";
 import { Migrations } from "./pg_migrations.ts";
 
 export class PgProvider implements DataProvider {
@@ -116,6 +122,16 @@ avatar) VALUES ($1,$2,$3,$4,$5,$6) ON CONFLICT DO NOTHING",
   async updateUserMeta(id: number, key: keyof CreateUser, val: unknown) {
     await this.use((db) =>
       db.queryArray(`UPDATE accounts SET ${key}=$2 WHERE tg_id=$1`, [id, val])
+    );
+  }
+
+  async addOutbox(data: OutboxInput) {
+    await this.use((db) =>
+      db.queryArray(
+'INSERT INTO outbox (id,actor,"to","cc","object",type) VALUES \
+($1,$2,$3,$4,$5,$6) ON CONFLICT DO NOTHING',
+        [data.id, data.actor, data.to, data.cc, data.object, data.type],
+      )
     );
   }
 }

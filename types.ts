@@ -17,6 +17,8 @@ export interface DataProvider {
     key: keyof CreateUser,
     val: unknown,
   ): Promise<void>;
+
+  addOutbox(data: OutboxInput): Promise<void>;
 }
 
 export type MigrationFn = (db: pg.PoolClient) => Promise<unknown>;
@@ -53,4 +55,13 @@ export type WebhookParams = {
   url: string;
   secret_token: string;
   max_connections?: number;
+};
+
+export type OutboxInput = {
+  id: string;
+  actor: string;
+  to: string[];
+  cc: string[];
+  type: string;
+  object: unknown;
 };

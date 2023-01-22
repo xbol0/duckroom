@@ -28,4 +28,19 @@ export const Migrations: MigrationFn[] = [
   key TEXT PRIMARY KEY,
   value TEXT
 )`,
+
+  /** 2023-01-22 16:00  Create outbox table */
+  (db) =>
+    db.queryArray`CREATE TABLE IF NOT EXISTS outbox (
+  id TEXT PRIMARY KEY,
+  actor TEXT NOT NULL,
+  type TEXT NOT NULL,
+  "to" TEXT[] NOT NULL,
+  cc TEXT[] NOT NULL,
+  "object" JSONB,
+  created_at TIMESTAMP NOT NULL DEFAULT current_timestamp
+)`,
+
+  /** 2023-01-22 16:29  Create outbox index for actor */
+  (db) => db.queryArray`CREATE INDEX actor_idx ON outbox (actor)`,
 ];

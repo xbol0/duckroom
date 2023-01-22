@@ -12,6 +12,10 @@ Router.set("GET/.well-known/webhook", wellknown.webhook);
 Router.set("GET/nodeinfo", wellknown.nodeinfo);
 Router.set("GET/botinfo", admin.getBotInfo);
 Router.set("GET/file", file.getFile);
+Router.set("GET/user", file.getFile);
+Router.set("GET/status", file.getFile);
+Router.set("GET/inbox", file.getFile);
+Router.set("GET/outbox", file.getFile);
 
 Router.set("POST/webhook", webhook.webhook);
 Router.set("POST/init", admin.initBot);
