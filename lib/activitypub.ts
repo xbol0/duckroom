@@ -39,9 +39,9 @@ export async function ensurePublicKey(id: string) {
     throw new Error("Invalid format, may not be an activitypub instance. 2");
   }
   if (
-    json["@context"] !== AP.ActivityStream ||
-    !(json["@context"] instanceof Array ||
-      !(json["@context"].includes(AP.ActivityStream)))
+    json["@context"] !== AP.ActivityStream &&
+    !(json["@context"] instanceof Array &&
+      json["@context"].includes(AP.ActivityStream))
   ) {
     throw new Error("Invalid format, may not be an activitypub instance. 3");
   }
