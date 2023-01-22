@@ -16,7 +16,7 @@ export async function user(req: Request) {
 
     id: `${origin}/user?id=${u.name}`,
     type: "Person",
-    preferredUsername: u.display_name,
+    preferredUsername: u.name,
     inbox: `${origin}/inbox?id=${u.name}`,
     outbox: `${origin}/outbox?id=${u.name}`,
     followers: `${origin}/followers?id=${u.name}`,
