@@ -4,6 +4,7 @@ import {
   DataProvider,
   MigrationFn,
   OutboxInput,
+  Siteinfo,
   StatusItem,
   User,
 } from "../types.ts";
@@ -28,6 +29,18 @@ export class PgProvider implements DataProvider {
     return await this.use(async (db) => {
       const res = await db.queryArray`SELECT key,value FROM siteinfos`;
       return Object.fromEntries(res.rows);
+    });
+  }
+
+  async setSiteinfo(data: Siteinfo) {
+    await this.use(async (db) => {
+      for (const [k, v] of Object.entries(data)) {
+        await db.queryArray(
+'INSERT INTO siteinfos ("key","value") VALUES ($1, $2) \
+ON CONFLICT DO UPDATE SET "value"=$2',
+          [k, v],
+        );
+      }
     });
   }
 

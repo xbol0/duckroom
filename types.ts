@@ -8,6 +8,8 @@ export interface DataProvider {
   close(): Promise<void>;
 
   getSiteinfo<T extends Siteinfo>(): Promise<T>;
+  setSiteinfo(data: Siteinfo): Promise<void>;
+
   getUserByTgid(id: number): Promise<User | null>;
   getUserByName(name: string): Promise<User | null>;
   createUser(input: CreateUser): Promise<void>;
@@ -23,10 +25,7 @@ export interface DataProvider {
 }
 
 export type MigrationFn = (db: pg.PoolClient) => Promise<unknown>;
-export type Siteinfo = {
-  title: string;
-  admin: string;
-};
+export type Siteinfo = Record<string, string>;
 
 export type User = {
   id: number;

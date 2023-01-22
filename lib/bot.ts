@@ -1,6 +1,11 @@
 import { config } from "../config.ts";
 import { ErrorRes } from "../deps.ts";
-import { SendMessageParams, SendPhotoParams, TgFile } from "../tg_types.ts";
+import {
+  SendMessageParams,
+  SendPhotoParams,
+  TgFile,
+  TgMe,
+} from "../tg_types.ts";
 import {
   TgCommandInput,
   TgResponse,
@@ -13,7 +18,7 @@ export function getWebhookInfo() {
 }
 
 export function getMe() {
-  return GET("getMe");
+  return GET<TgMe>("getMe");
 }
 
 export function setWebhook(data: WebhookParams) {

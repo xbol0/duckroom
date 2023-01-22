@@ -5,10 +5,21 @@ import * as bot from "../lib/bot.ts";
 import { respond } from "../server/response.ts";
 import { config } from "../config.ts";
 import { DefaultCommands } from "../constant/commands.ts";
+import { db } from "../database/mod.ts";
 
 export async function initBot(req: Request) {
   const body = await adminAuth<AdminInitInput>(req);
   if (!verifyBody(body)) throw new ErrorRes("Invalid body");
+
+  const me = await bot.getMe();
+  console.log(me);
+
+  await db.setSiteinfo({
+    bot_id: me.id.toString(),
+    bot_name: me.first_name,
+    username: me.username,
+  });
+  console.log("Update siteinfo successful.");
 
   const url = body.url || `${new URL(req.url).origin}/webhook`;
 
