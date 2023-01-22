@@ -23,9 +23,9 @@ export async function webhook(req: Request) {
     const command = msg.text!.slice(item.offset + 1, item.length + item.offset);
     const content = msg.text!.slice(item.length + 1);
 
-    queueMicrotask(() => handleCommand(command, content, msg));
+    queueMicrotask(() => handleCommand(command, content, msg, req));
   } else {
-    queueMicrotask(() => handleOutbox(msg));
+    queueMicrotask(() => handleOutbox(msg, req));
   }
   return respond(null, 202);
 }

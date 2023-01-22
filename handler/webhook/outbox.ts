@@ -2,7 +2,7 @@ import { getSession } from "../../lib/session.ts";
 import { TgMessage } from "../../types.ts";
 import * as Bot from "../../lib/bot.ts";
 
-export async function handleOutbox(msg: TgMessage) {
+export async function handleOutbox(msg: TgMessage, _req: Request) {
   const s = await getSession(msg);
 
   if (!s) {
