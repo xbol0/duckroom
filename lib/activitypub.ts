@@ -172,7 +172,7 @@ function parseSignature(str: string) {
 
   const keyId = keySection.slice(7, -1);
   const sign = base64.decode(signSection.slice(11, -1));
-  const headers = headersSection.split(" ").slice(1);
+  const headers = headersSection.slice(9, -1).split(" ").slice(1);
 
   return { keyId, headers, sign };
 }
