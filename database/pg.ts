@@ -178,7 +178,7 @@ avatar) VALUES ($1,$2,$3,$4,$5,$6) ON CONFLICT DO NOTHING",
       const res = next
         ? await db.queryObject(
 'SELECT id,actor,"type","to","cc","object" FROM outbox \
-WHERE actor=$1 AND id>$2 ORDER BY created_at DESC LIMIT 10',
+WHERE actor=$1 AND id<$2 ORDER BY created_at DESC LIMIT 10',
           [id, next],
         )
         : await db.queryObject(

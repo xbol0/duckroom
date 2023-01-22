@@ -79,7 +79,7 @@ export async function outbox(req: Request) {
       type: "OrderedCollection",
       totalItems: total,
       id: `${origin}/outbox?id=${id}`,
-      first: `${origin}/outbox?id=${id}?next=`,
+      first: `${origin}/outbox?id=${id}&next=`,
     });
   }
 }
