@@ -24,6 +24,9 @@ export interface DataProvider {
   getOutbox(id: string): Promise<StatusItem | null>;
   getOutboxTotal(id: string): Promise<number>;
   listOutbox(id: string, next: string): Promise<StatusItem[]>;
+
+  getActor(id: string): Promise<Actor | null>;
+  setActor(data: Actor): Promise<void>;
 }
 
 export type MigrationFn = (db: pg.PoolClient) => Promise<unknown>;
@@ -70,3 +73,13 @@ export type OutboxInput = {
 };
 
 export type StatusItem = OutboxInput & { created_at: Date };
+
+export type Actor = {
+  id: string;
+  username: string;
+  nickname: string;
+  public_key: Uint8Array;
+  inbox: string;
+  outbox: string;
+  shared_inbox: string;
+};

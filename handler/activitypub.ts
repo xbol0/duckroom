@@ -2,6 +2,7 @@ import { db } from "../database/mod.ts";
 import { ErrorRes } from "../deps.ts";
 import { respond } from "../server/response.ts";
 import * as AP from "../constant/activitypub.ts";
+import { ensurePublicKey } from "../lib/activitypub.ts";
 
 export async function user(req: Request) {
   const { id, origin } = getId(req);
@@ -18,6 +19,7 @@ export async function user(req: Request) {
     id: `${origin}/user?id=${u.name}`,
     type: "Person",
     preferredUsername: u.name,
+    name: u.display_name,
     inbox: `${origin}/inbox?id=${u.name}`,
     outbox: `${origin}/outbox?id=${u.name}`,
     followers: `${origin}/followers?id=${u.name}`,
@@ -41,8 +43,26 @@ export async function status(req: Request) {
 
 export async function inbox(req: Request) {
   const json = await req.json();
-
   console.log(json);
+
+  if (typeof json !== "object" || json === null) return respond(null, 204);
+  if (!("@context" in json) || json["@context"].includes(AP.ActivityStream)) {
+    return respond(null, 204);
+  }
+
+  if (!("actor" in json) || typeof json.actor !== "string") {
+    return respond(null, 204);
+  }
+
+  try {
+    await ensurePublicKey(json.actor);
+
+    // TODO: store inbox and forward message
+  } catch (err) {
+    console.error(err);
+
+    return respond(null, 204);
+  }
   return respond(null, 202);
 }
 

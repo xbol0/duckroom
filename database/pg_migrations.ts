@@ -43,4 +43,17 @@ export const Migrations: MigrationFn[] = [
 
   /** 2023-01-22 16:29  Create outbox index for actor */
   (db) => db.queryArray`CREATE INDEX actor_idx ON outbox (actor)`,
+
+  /** 2023-01-22 20:52  Create actors table */
+  (db) =>
+    db.queryArray`CREATE TABLE IF NOT EXISTS actors (
+  id TEXT PRIMARY KEY,
+  username TEXT NOT NULL,
+  nickname TEXT,
+  summary TEXT,
+  public_key BYTEA,
+  inbox TEXT,
+  outbox TEXT,
+  shared_inbox TEXT
+)`,
 ];

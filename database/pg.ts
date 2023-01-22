@@ -1,5 +1,6 @@
 import { pg } from "../deps.ts";
 import {
+  Actor,
   CreateUser,
   DataProvider,
   MigrationFn,
@@ -189,5 +190,37 @@ WHERE actor=$1 ORDER BY created_at DESC LIMIT 10',
 
       return res.rows as StatusItem[];
     });
+  }
+
+  async getActor(id: string) {
+    return await this.use(async (db) => {
+      const res = await db.queryObject(
+"SELECT id,username,nickname,inbox,outbox,shared_inbox,public_key \
+FROM actors WHERE id=$1 LIMIT 1",
+        [id],
+      );
+
+      if (!res.rows.length) return null;
+
+      return res.rows[0] as Actor;
+    });
+  }
+
+  async setActor(data: Actor) {
+    await this.use((db) =>
+      db.queryArray(
+"INSERT INTO outbox (id,username,nickname,inbox,outbox,shared_inbox,public_key) VALUES \
+($1,$2,$3,$4,$5,$6,$7) ON CONFLICT (id) DO UPDATE SET nickname=$3,public_key=$7",
+        [
+          data.id,
+          data.username,
+          data.nickname,
+          data.inbox,
+          data.outbox,
+          data.shared_inbox,
+          data.public_key,
+        ],
+      )
+    );
   }
 }
