@@ -112,4 +112,10 @@ avatar) VALUES ($1,$2,$3,$4,$5,$6) ON CONFLICT DO NOTHING",
       db.queryArray("DELETE FROM accounts WHERE tg_id=$1", [id])
     );
   }
+
+  async updateUserMeta(id: number, key: keyof CreateUser, val: unknown) {
+    await this.use((db) =>
+      db.queryArray(`UPDATE accounts SET ${key}=$2 WHERE tg_id=$1`, [id, val])
+    );
+  }
 }

@@ -12,6 +12,11 @@ export interface DataProvider {
   getUserByName(name: string): Promise<User | null>;
   createUser(input: CreateUser): Promise<void>;
   delUserByTgid(id: number): Promise<void>;
+  updateUserMeta(
+    id: number,
+    key: keyof CreateUser,
+    val: unknown,
+  ): Promise<void>;
 }
 
 export type MigrationFn = (db: pg.PoolClient) => Promise<unknown>;
@@ -25,6 +30,10 @@ export type User = {
   tg_id: number;
   name: string;
   display_name: string;
+  avatar: string;
+  following: number;
+  followers: number;
+  statuses: number;
 };
 export type CreateUser = {
   tg_id: number;

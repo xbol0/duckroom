@@ -1,5 +1,7 @@
 import { TgMessage } from "../../types.ts";
 import * as Account from "../command/account.ts";
+import * as Profile from "../command/profile.ts";
+import * as System from "../command/system.ts";
 
 const Commands = new Map<
   string,
@@ -7,6 +9,9 @@ const Commands = new Map<
 >([
   ["bind", Account.bind],
   ["unbind", Account.unbind],
+  ["me", Profile.getProfile],
+  ["nickname", Profile.getProfile],
+  ["refresh", System.refreshCommands],
 ]);
 
 export async function handleCommand(
