@@ -46,7 +46,18 @@ export async function inbox(req: Request) {
   console.log(json);
 
   if (typeof json !== "object" || json === null) return respond(null, 204);
-  if (!("@context" in json) || json["@context"].includes(AP.ActivityStream)) {
+  if (!("@context" in json)) {
+    return respond(null, 204);
+  }
+
+  if (typeof json["@context"] === "string") {
+    if (json["@context"] !== AP.ActivityStream) return respond(null, 204);
+  } else if (
+    json["@context"] instanceof Array &&
+    !json["@context"].includes(AP.ActivityStream)
+  ) {
+    return respond(null, 204);
+  } else if (!(json["@context"] instanceof Array)) {
     return respond(null, 204);
   }
 
