@@ -22,7 +22,7 @@ export async function getProfile(_: string, msg: TgMessage, _req: Request) {
         "You don't have set an avatar, send a picture with command /avatar to set an avatar.",
     });
   } else {
-    // TODO: Send user avatar
+    await Bot.sendPhoto({ chat_id: msg.chat.id, photo: s.avatar });
   }
 
   await Bot.sendMessage({
@@ -70,6 +70,11 @@ export async function avatar(_c: string, msg: TgMessage, _: Request) {
 
     await db.updateUserMeta(msg.from.id, "avatar", fileId);
     console.log(`Update user ${msg.from.id} successfully.`);
+
+    await Bot.sendMessage({
+      chat_id: msg.chat.id,
+      text: "Your avatar was updated successfully.",
+    });
     return;
   }
 

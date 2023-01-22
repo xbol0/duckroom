@@ -14,9 +14,14 @@ export async function getFile(req: Request) {
 
     if (!data.file_path) return respond(null, 403);
 
-    return fetch(
+    const res = await fetch(
       `https://api.telegram.org/file/bot${config.tgToken}/${data.file_path}`,
     );
+
+    const name = data.file_path.split("/").pop();
+    res.headers.set("content-disposition", `attachment; filename="${name}"`);
+
+    return res;
   } catch (err) {
     console.error(err);
 
