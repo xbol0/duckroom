@@ -36,6 +36,7 @@ export type User = {
   following: number;
   followers: number;
   statuses: number;
+  public_key: string;
 };
 export type CreateUser = {
   tg_id: number;

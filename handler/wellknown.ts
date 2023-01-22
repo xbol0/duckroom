@@ -53,11 +53,11 @@ export function webfinger(req: Request) {
 
   return respond({
     subject: resource,
-    aliases: [`${origin}/user?name=${name}`],
+    aliases: [`${origin}/user?id=${name}`],
     links: [{
       rel: "self",
       type: "application/activity+json",
-      href: `${origin}/@${name}`,
+      href: `${origin}/user?id=${name}`,
     }],
   });
 }
