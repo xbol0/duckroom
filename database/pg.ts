@@ -1,5 +1,5 @@
 import { pg } from "../deps.ts";
-import { DataProvider, MigrationFn } from "../types.ts";
+import { CreateUser, DataProvider, MigrationFn, User } from "../types.ts";
 import { Migrations } from "./pg_migrations.ts";
 
 export class PgProvider implements DataProvider {
@@ -63,6 +63,47 @@ export class PgProvider implements DataProvider {
       }
 
       console.log("Migrated");
+    });
+  }
+
+  async getUserByTgid(id: number) {
+    return await this.use(async (db) => {
+      const res = await db.queryObject<User>(
+"SELECT id,tg_id,name,display_name,public_key,private_key, \
+avatar,stat,following,followers,statuses FROM accounts WHERE tg_id=? LIMIT 1",
+        [id],
+      );
+      if (!res.rows.length) return null;
+      return res.rows[0];
+    });
+  }
+
+  async getUserByName(name: string) {
+    return await this.use(async (db) => {
+      const res = await db.queryObject<User>(
+"SELECT id,tg_id,name,display_name,public_key,private_key, \
+avatar,stat,following,followers,statuses FROM accounts WHERE tg_id=? LIMIT 1",
+        [name],
+      );
+      if (!res.rows.length) return null;
+      return res.rows[0];
+    });
+  }
+
+  async createUser(data: CreateUser) {
+    await this.use(async (db) => {
+      await db.queryArray(
+"INSERT INTO accounts(tg_id,name,display_name,public_key,private_key,\
+avatar) VALUES (?,?,?,?,?,?) ON CONFLICT DO NOTHING",
+        [
+          data.tg_id,
+          data.name,
+          data.display_name,
+          data.public_key,
+          data.private_key,
+          data.avatar,
+        ],
+      );
     });
   }
 }

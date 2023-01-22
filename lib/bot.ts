@@ -1,5 +1,6 @@
 import { config } from "../config.ts";
 import { ErrorRes } from "../deps.ts";
+import { SendMessageParams } from "../tg_types.ts";
 import {
   TgCommandInput,
   TgResponse,
@@ -37,6 +38,10 @@ export function getMyCommands(data: Omit<TgCommandInput, "commands">) {
 
 export function deleteMyCommands(data: Omit<TgCommandInput, "commands">) {
   return POST("deleteMyCommands", data);
+}
+
+export function sendMessage(data: SendMessageParams) {
+  return POST("sendMessage", data);
 }
 
 async function GET<T>(method: string): Promise<T> {

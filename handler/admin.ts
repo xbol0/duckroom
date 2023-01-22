@@ -4,6 +4,7 @@ import { AdminInitInput } from "../types.ts";
 import * as bot from "../lib/bot.ts";
 import { respond } from "../server/response.ts";
 import { config } from "../config.ts";
+import { DefaultCommands } from "../constant/commands.ts";
 
 export async function initBot(req: Request) {
   const body = await adminAuth<AdminInitInput>(req);
@@ -24,12 +25,7 @@ export async function initBot(req: Request) {
   });
 
   console.log("Update bot commands");
-  await bot.setMyCommands({
-    commands: [
-      { command: "help", description: "Get help messages." },
-      { command: "info", description: "Get your profile." },
-    ],
-  });
+  await bot.setMyCommands({ commands: DefaultCommands });
 
   console.log("Update webhook info success");
 
