@@ -87,7 +87,7 @@ export async function ensurePublicKey(id: string) {
         raw,
         { name: "RSA-PSS", hash: "SHA-256" },
         true,
-        ["sign"],
+        ["verify"],
       );
     }
   }
