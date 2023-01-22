@@ -42,7 +42,13 @@ export async function status(req: Request) {
 }
 
 export async function inbox(req: Request) {
-  const json = await verifyInbox(req);
+  let json;
+  try {
+    json = await verifyInbox(req);
+  } catch (err) {
+    console.error(err);
+    return respond(err);
+  }
   console.log(json);
 
   if (typeof json !== "object" || json === null) return respond(null, 204);
