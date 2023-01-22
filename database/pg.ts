@@ -37,7 +37,7 @@ export class PgProvider implements DataProvider {
       for (const [k, v] of Object.entries(data)) {
         await db.queryArray(
 'INSERT INTO siteinfos ("key","value") VALUES ($1, $2) \
-ON CONFLICT DO UPDATE SET "value"=$2',
+ON CONFLICT ("key") DO UPDATE SET "value"=$2',
           [k, v],
         );
       }
