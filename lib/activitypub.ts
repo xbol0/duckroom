@@ -1,4 +1,4 @@
-import { base64, hex } from "../deps.ts";
+import { base64, ErrorRes, hex } from "../deps.ts";
 import * as AP from "../constant/activitypub.ts";
 import { db } from "../database/mod.ts";
 import { Actor } from "../types.ts";
@@ -89,4 +89,84 @@ export async function ensurePublicKey(id: string) {
 
   await db.setActor(data as Actor);
   console.log("set actor successful.");
+}
+
+export async function verifyInbox<T>(req: Request): Promise<T> {
+  const digest = req.headers.get("digest"),
+    originSign = req.headers.get("signature"),
+    date = req.headers.get("date"),
+    u = new URL(req.url);
+
+  if (!digest || !originSign) throw new ErrorRes("Forbidden");
+  console.log(digest);
+  console.log(originSign);
+
+  const buf = await req.arrayBuffer();
+  const hash = new Uint8Array(await crypto.subtle.digest("SHA-256", buf));
+  if (digest.slice(-64).toLowerCase() !== hex.encode(hash).toLowerCase()) {
+    throw new ErrorRes("Unmatched content hash.");
+  }
+
+  const signObj = parseSignature(originSign);
+  const owner = await getKeyOwner(signObj.keyId);
+  await ensurePublicKey(owner);
+  const actor = await db.getActor(owner);
+  if (!actor) throw new ErrorRes(`Actor ${owner} not found`);
+
+  const key = await crypto.subtle.importKey(
+    "spki",
+    actor.public_key,
+    { name: "RSA-PSS", hash: "SHA-256" },
+    true,
+    ["verify"],
+  );
+  const strToSign =
+    `(request-target): post ${u.pathname}\nhost: ${u.hostname}\ndate: ${date}\ndigest: ${digest}`;
+  const v = await crypto.subtle.verify(
+    {
+      name: "RSA-PSS",
+      hash: "SHA-256",
+      saltLength: 32,
+    },
+    key,
+    signObj.sign,
+    new TextEncoder().encode(strToSign),
+  );
+
+  if (!v) {
+    throw new ErrorRes("Unverified signature");
+  }
+  return JSON.parse(new TextDecoder().decode(buf)) as T;
+}
+
+function parseSignature(str: string) {
+  const arr = str.trim().split(",");
+  if (arr.length !== 3) throw new Error("Invalid Signature");
+  const keyId = arr[0].slice(7, -1);
+  const sign = base64.decode(arr[2].slice(11, -1));
+  const headers = arr[1].split(" ").slice(1);
+
+  return { keyId, headers, sign };
+}
+
+async function getKeyOwner(keyId: string) {
+  const res = await fetch(keyId, {
+    headers: {
+      accept: "application/json",
+      "user-agent": "Duckroom",
+    },
+  });
+
+  if (res.status !== 200) {
+    throw new Error("Fetch key owner fail. " + res.status);
+  }
+
+  const json = await res.json();
+  console.log(json);
+  const id = json?.id;
+
+  if (!id) throw new Error("Cannot found owner id.");
+  if (typeof id !== "string") throw new Error("Invalid ID format");
+
+  return id;
 }

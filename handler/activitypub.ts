@@ -2,7 +2,7 @@ import { db } from "../database/mod.ts";
 import { ErrorRes } from "../deps.ts";
 import { respond } from "../server/response.ts";
 import * as AP from "../constant/activitypub.ts";
-import { ensurePublicKey } from "../lib/activitypub.ts";
+import { verifyInbox } from "../lib/activitypub.ts";
 
 export async function user(req: Request) {
   const { id, origin } = getId(req);
@@ -42,7 +42,7 @@ export async function status(req: Request) {
 }
 
 export async function inbox(req: Request) {
-  const json = await req.json();
+  const json = await verifyInbox(req);
   console.log(json);
 
   if (typeof json !== "object" || json === null) return respond(null, 204);
@@ -66,7 +66,9 @@ export async function inbox(req: Request) {
   }
 
   try {
-    await ensurePublicKey(json.actor);
+    // public key is stored on verify step
+    // so dont need ensure again.
+    // await ensurePublicKey(json.actor);
 
     // TODO: store inbox and forward message
   } catch (err) {
