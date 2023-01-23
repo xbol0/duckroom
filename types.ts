@@ -1,5 +1,6 @@
 import { pg } from "./deps.ts";
 export * from "./tg_types.ts";
+export * from "./ap_types.ts";
 
 export type Handler = (q: Request) => Response | Promise<Response>;
 

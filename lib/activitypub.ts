@@ -2,6 +2,7 @@ import { base64, ErrorRes, hex } from "../deps.ts";
 import * as AP from "../constant/activitypub.ts";
 import { db } from "../database/mod.ts";
 import { Actor } from "../types.ts";
+import { AP_Person } from "../ap_types.ts";
 
 export function newId() {
   const ts = (~~(Date.now() / 1000)).toString(16);
@@ -17,19 +18,8 @@ export async function ensurePublicKey(id: string) {
   }
 
   console.log("fetch", id);
-  const res = await fetch(id, {
-    headers: {
-      accept: "application/activity+json",
-      "user-agent": "Duckroom",
-    },
-  });
+  const json = await fetchActivity(id);
 
-  if (res.status !== 200) {
-    console.log(res.status);
-    throw new Error("Request fail: " + res.status);
-  }
-
-  const json = await res.json();
   console.log(json);
 
   if (typeof json !== "object" || json === null) {
@@ -69,7 +59,7 @@ export async function ensurePublicKey(id: string) {
     }
     if (
       "endpoints" in json && typeof json.endpoints === "object" &&
-      "sharedInbox" in json.endpoints &&
+      json.endpoints && "sharedInbox" in json.endpoints &&
       typeof json.endpoints.sharedInbox === "string"
     ) {
       data.shared_inbox = json.endpoints.sharedInbox;
@@ -79,7 +69,7 @@ export async function ensurePublicKey(id: string) {
   if (json["@context"].includes(AP.ActivitySecurity)) {
     if (
       "publicKey" in json && typeof json.publicKey === "object" &&
-      "publicKeyPem" in json.publicKey &&
+      json.publicKey && "publicKeyPem" in json.publicKey &&
       typeof json.publicKey.publicKeyPem === "string"
     ) {
       const str = json.publicKey.publicKeyPem.trim().split("\n").slice(1, -1)
@@ -179,23 +169,37 @@ function parseSignature(str: string) {
 }
 
 async function getKeyOwner(keyId: string) {
-  const res = await fetch(keyId, {
-    headers: {
-      accept: "application/json",
-      "user-agent": "Duckroom",
-    },
+  const json = await fetchActivity<AP_Person>(keyId);
+
+  console.log(json);
+  if (typeof json.id !== "string") throw new Error("Invalid ID format");
+
+  return json.id;
+}
+
+export async function fetchActivity<T extends { type: string }>(
+  url: string,
+): Promise<T> {
+  const res = await fetch(url, {
+    headers: { accept: "application/json", "user-agent": "Duckroom" },
   });
 
-  if (res.status !== 200) {
-    throw new Error("Fetch key owner fail. " + res.status);
+  if (res.status !== 200) throw new Error("Fetch data fail.");
+  const json = await res.json();
+
+  if (typeof json !== "object" || json === null) {
+    throw new Error("Invalid data format");
   }
 
-  const json = await res.json();
-  console.log(json);
-  const id = json?.id;
+  if (!("@context" in json)) throw new Error("Invalid context");
+  if (
+    !(typeof json["@context"] === "string" &&
+      json["@context"] === AP.ActivityStream) &&
+    !(json["@context"] instanceof Array &&
+      json["@context"].includes(AP.ActivityStream))
+  ) {
+    throw new Error("Context not contained ActivityStream.");
+  }
 
-  if (!id) throw new Error("Cannot found owner id.");
-  if (typeof id !== "string") throw new Error("Invalid ID format");
-
-  return id;
+  return json as T;
 }

@@ -3,6 +3,8 @@ import { ErrorRes } from "../deps.ts";
 import { respond } from "../server/response.ts";
 import * as AP from "../constant/activitypub.ts";
 import { verifyInbox } from "../lib/activitypub.ts";
+import { handleInbox } from "../app/inbox.ts";
+import { AP_Inbox } from "../ap_types.ts";
 
 export async function user(req: Request) {
   const { id, origin } = getId(req);
@@ -42,46 +44,16 @@ export async function status(req: Request) {
 }
 
 export async function inbox(req: Request) {
-  let json;
   try {
-    json = await verifyInbox(req);
-  } catch (err) {
-    console.error(err);
-    return respond(err);
-  }
-  console.log(json);
-
-  if (typeof json !== "object" || json === null) return respond(null, 204);
-  if (!("@context" in json)) {
-    return respond(null, 204);
-  }
-
-  if (typeof json["@context"] === "string") {
-    if (json["@context"] !== AP.ActivityStream) return respond(null, 204);
-  } else if (
-    json["@context"] instanceof Array &&
-    !json["@context"].includes(AP.ActivityStream)
-  ) {
-    return respond(null, 204);
-  } else if (!(json["@context"] instanceof Array)) {
-    return respond(null, 204);
-  }
-
-  if (!("actor" in json) || typeof json.actor !== "string") {
-    return respond(null, 204);
-  }
-
-  try {
-    // public key is stored on verify step
-    // so dont need ensure again.
-    // await ensurePublicKey(json.actor);
-
-    // TODO: store inbox and forward message
+    const json = await verifyInbox<AP_Inbox>(req);
+    console.log(json);
+    queueMicrotask(() => handleInbox(json, req));
   } catch (err) {
     console.error(err);
 
-    return respond(null, 204);
+    return respond(err, 400);
   }
+
   return respond(null, 202);
 }
 
