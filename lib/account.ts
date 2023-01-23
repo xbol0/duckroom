@@ -3,8 +3,8 @@ import { base64 } from "../deps.ts";
 export async function generateKeypair() {
   const keys = await crypto.subtle.generateKey(
     {
-      name: "RSA-PSS",
-      modulusLength: 4096,
+      name: "RSASSA-PKCS1-v1_5",
+      modulusLength: 2048,
       publicExponent: new Uint8Array([1, 0, 1]),
       hash: "SHA-256",
     },
