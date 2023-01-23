@@ -45,6 +45,9 @@ export async function ensurePublicKey(id: string) {
   ) {
     throw new Error("Invalid format, may not be an activitypub instance. 3");
   }
+  if (!("type" in json) || json.type !== "Person") {
+    throw new Error("Object type is not a Person.");
+  }
 
   const data: Record<string, unknown> = { id };
 
