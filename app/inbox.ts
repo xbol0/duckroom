@@ -34,7 +34,7 @@ async function handleFollow(input: AP_Follow, req: Request) {
 
   const from = await parseUsername(input.actor);
   await Bot.sendMessage({
-    chat_id: user.chat_id,
+    chat_id: Number(user.chat_id),
     text: `${from} requests to follow you.`,
     reply_markup: {
       inline_keyboard: [
