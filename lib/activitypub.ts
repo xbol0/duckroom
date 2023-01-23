@@ -203,3 +203,10 @@ export async function fetchActivity<T extends { type: string }>(
 
   return json as T;
 }
+
+export async function parseUsername(id: string) {
+  const res = await db.getActor(id);
+  if (!res) throw new Error(`Actor ${id} not found.`);
+  const u = new URL(id);
+  return `@${res.username}@${u.hostname}`;
+}

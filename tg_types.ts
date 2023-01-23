@@ -86,7 +86,7 @@ export type SendMessageParams = {
   text: string;
   parse_mode?: string;
   entities?: TgEntity[];
-  reply_markup?: unknown;
+  reply_markup?: InlineKeyboardMarkup;
   disable_web_page_preview?: boolean;
 };
 
@@ -98,4 +98,13 @@ export type SendPhotoParams = {
   reply_markup?: unknown;
   has_spoiler?: boolean;
   caption_entities?: TgEntity[];
+};
+
+export type InlineKeyboardMarkup = {
+  inline_keyboard: {
+    text: string;
+    url?: string;
+    callback_data?: string;
+    web_app?: { url: string };
+  }[][];
 };
