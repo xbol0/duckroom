@@ -128,9 +128,7 @@ export async function verifyInbox<T>(req: Request): Promise<T> {
     true,
     ["verify"],
   );
-  let strToSign = `(request-target): ${req.method.toLowerCase()} ${
-    u.pathname + u.search
-  }`;
+  let strToSign = `(request-target): ${req.method.toLowerCase()} ${u.pathname}`;
   const headersPart = signObj.headers.map((i) => `${i}: ${req.headers.get(i)}`)
     .join("\n");
   strToSign += "\n" + headersPart;
@@ -138,11 +136,7 @@ export async function verifyInbox<T>(req: Request): Promise<T> {
   console.log(strToSign);
 
   const v = await crypto.subtle.verify(
-    {
-      name: "RSA-PSS",
-      hash: "SHA-256",
-      saltLength: 32,
-    },
+    { name: "RSA-PSS", hash: "SHA-256", saltLength: 32 },
     key,
     signObj.sign,
     new TextEncoder().encode(strToSign),
