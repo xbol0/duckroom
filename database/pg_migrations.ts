@@ -56,4 +56,10 @@ export const Migrations: MigrationFn[] = [
   outbox TEXT,
   shared_inbox TEXT
 )`,
+
+  /** 2023-01-23 15:44  Add column chat_id for accounts */
+  (db) =>
+    db.queryArray(
+      "ALTER TABLE IF EXISTS accounts ADD COLUMN IF NOT EXISTS chat_id INT NOT NULL DEFAULT 0",
+    ),
 ];

@@ -91,7 +91,7 @@ ON CONFLICT ("key") DO UPDATE SET "value"=$2',
     return await this.use(async (db) => {
       const res = await db.queryObject<User>(
 "SELECT id,tg_id,name,display_name,public_key,private_key, \
-avatar,stat,following,followers,statuses FROM accounts WHERE tg_id=$1 LIMIT 1",
+avatar,stat,following,followers,statuses,chat_id FROM accounts WHERE tg_id=$1 LIMIT 1",
         [id],
       );
       if (!res.rows.length) return null;
@@ -103,7 +103,7 @@ avatar,stat,following,followers,statuses FROM accounts WHERE tg_id=$1 LIMIT 1",
     return await this.use(async (db) => {
       const res = await db.queryObject<User>(
 "SELECT id,tg_id,name,display_name,public_key,private_key, \
-avatar,stat,following,followers,statuses FROM accounts WHERE name=$1 LIMIT 1",
+avatar,stat,following,followers,statuses,chat_id FROM accounts WHERE name=$1 LIMIT 1",
         [name],
       );
       if (!res.rows.length) return null;
@@ -115,7 +115,7 @@ avatar,stat,following,followers,statuses FROM accounts WHERE name=$1 LIMIT 1",
     await this.use(async (db) => {
       await db.queryArray(
 "INSERT INTO accounts(tg_id,name,display_name,public_key,private_key,\
-avatar) VALUES ($1,$2,$3,$4,$5,$6) ON CONFLICT DO NOTHING",
+avatar,chat_id) VALUES ($1,$2,$3,$4,$5,$6,$7) ON CONFLICT DO NOTHING",
         [
           data.tg_id,
           data.name,
@@ -123,6 +123,7 @@ avatar) VALUES ($1,$2,$3,$4,$5,$6) ON CONFLICT DO NOTHING",
           data.public_key,
           data.private_key,
           data.avatar,
+          data.chat_id,
         ],
       );
     });

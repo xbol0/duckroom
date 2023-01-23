@@ -36,6 +36,7 @@ export type Siteinfo = Record<string, string>;
 export type User = {
   id: number;
   tg_id: number;
+  chat_id: number;
   name: string;
   display_name: string;
   avatar: string;
@@ -46,6 +47,7 @@ export type User = {
 };
 export type CreateUser = {
   tg_id: number;
+  chat_id: number;
   name: string;
   display_name: string;
   public_key: string;

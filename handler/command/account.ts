@@ -22,6 +22,7 @@ eg. /bind alice",
       display_name: name,
       avatar: "",
       tg_id: msg.from.id,
+      chat_id: msg.chat.id,
     });
 
     const u = new URL(req.url);
