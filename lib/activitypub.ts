@@ -117,6 +117,8 @@ export async function verifyInbox<T>(req: Request): Promise<T> {
   console.log(signObj);
 
   const owner = await getKeyOwner(signObj.keyId);
+  console.log("key owner:", owner);
+
   await ensurePublicKey(owner);
   const actor = await db.getActor(owner);
   if (!actor) throw new ErrorRes(`Actor ${owner} not found`);
@@ -124,7 +126,7 @@ export async function verifyInbox<T>(req: Request): Promise<T> {
   const key = await crypto.subtle.importKey(
     "spki",
     actor.public_key,
-    { name: "RSA-PSS", hash: "SHA-256" },
+    { name: "RSASSA-PKCS1-v1_5", hash: "SHA-256" },
     true,
     ["verify"],
   );
@@ -136,7 +138,7 @@ export async function verifyInbox<T>(req: Request): Promise<T> {
   console.log(strToSign);
 
   const v = await crypto.subtle.verify(
-    { name: "RSA-PSS", hash: "SHA-256", saltLength: 32 },
+    { name: "RSASSA-PKCS1-v1_5", hash: "SHA-256", saltLength: 32 },
     key,
     signObj.sign,
     new TextEncoder().encode(strToSign),
