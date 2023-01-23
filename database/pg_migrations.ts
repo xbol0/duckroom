@@ -62,4 +62,10 @@ export const Migrations: MigrationFn[] = [
     db.queryArray(
       "ALTER TABLE IF EXISTS accounts ADD COLUMN IF NOT EXISTS chat_id INT NOT NULL DEFAULT 0",
     ),
+
+  /** 2023-01-23 15:44  Add column chat_id to bigint for accounts */
+  (db) =>
+    db.queryArray(
+      "ALTER TABLE IF EXISTS accounts ALTER COLUMN chat_id TYPE BIGINT",
+    ),
 ];
