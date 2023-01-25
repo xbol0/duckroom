@@ -1,17 +1,17 @@
 import { config } from "../config.ts";
 import { ErrorRes } from "../deps.ts";
 import {
+  AnswerCallbackQuery,
+  DeleteMessage,
   SendMessageParams,
   SendPhotoParams,
+  TgCommandInput,
   TgFile,
   TgMe,
-} from "../tg_types.ts";
-import {
-  TgCommandInput,
   TgResponse,
   TgWebhookInfo,
   WebhookParams,
-} from "../types.ts";
+} from "../tg_types.ts";
 
 export function getWebhookInfo() {
   return GET<TgWebhookInfo>("getWebhookInfo");
@@ -55,6 +55,14 @@ export function getFile(id: string): Promise<TgFile> {
 
 export function sendPhoto(data: SendPhotoParams) {
   return POST("sendPhoto", data);
+}
+
+export function answerCallbackQuery(data: AnswerCallbackQuery) {
+  return POST("answerCallbackQuery", data);
+}
+
+export function deleteMessage(data: DeleteMessage) {
+  return POST("deleteMessage", data);
 }
 
 async function GET<T>(method: string): Promise<T> {

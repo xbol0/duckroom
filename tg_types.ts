@@ -1,3 +1,9 @@
+export type WebhookParams = {
+  url: string;
+  secret_token: string;
+  max_connections?: number;
+};
+
 export type TgResponse<T> = TgResult<T> | TgFail;
 export type TgFail = {
   ok: false;
@@ -116,4 +122,17 @@ export type InlineKeyboardMarkup = {
     callback_data?: string;
     web_app?: { url: string };
   }[][];
+};
+
+export type AnswerCallbackQuery = {
+  callback_query_id: string;
+  text?: string;
+  show_alert?: boolean;
+  url?: string;
+  cache_time?: number;
+};
+
+export type DeleteMessage = {
+  chat_id: number;
+  message_id: number;
 };

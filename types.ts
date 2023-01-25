@@ -69,12 +69,6 @@ export type AdminInitInput = {
   url?: string;
 };
 
-export type WebhookParams = {
-  url: string;
-  secret_token: string;
-  max_connections?: number;
-};
-
 export type OutboxInput = {
   id: string;
   actor: string;
