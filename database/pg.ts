@@ -242,7 +242,7 @@ FROM actors WHERE id=$1 LIMIT 1",
   async getFollowRequest(id: number) {
     return await this.use(async (db) => {
       const res = await db.queryObject<FollowRequest>(
-        "SELECT id,name,inbox,data FROM follow_requests WHERE id=$1 LIMIT 1",
+        "SELECT id,name,actor,data FROM follow_requests WHERE id=$1 LIMIT 1",
         [id],
       );
       if (res.rows.length) return res.rows[0];
