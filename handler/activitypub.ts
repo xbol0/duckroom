@@ -47,7 +47,13 @@ export async function inbox(req: Request) {
   try {
     const json = await verifyInbox<AP_Inbox>(req);
     console.log(json);
-    queueMicrotask(() => handleInbox(json, req));
+    queueMicrotask(async () => {
+      try {
+        await handleInbox(json, req);
+      } catch (err) {
+        console.error(err);
+      }
+    });
   } catch (err) {
     console.error(err);
 

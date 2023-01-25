@@ -8,7 +8,7 @@ export function handleInbox(input: AP_Inbox, req: Request) {
     return handleFollow(input, req);
   }
 
-  console.log(`Unsupport type '${input.type}'`);
+  throw new Error(`'${input.type}' is not implemented`);
 }
 
 async function handleFollow(input: AP_Follow, req: Request) {
@@ -19,8 +19,7 @@ async function handleFollow(input: AP_Follow, req: Request) {
   const u = new URL(req.url);
   const objectUrl = new URL(input.object);
   if (u.origin !== objectUrl.origin) {
-    // May be one followed cc to you.
-    return;
+    throw new Error(`${input.object} is not belongs to this instance.`);
   }
 
   // TODO: implement support manually approve follow request
@@ -30,12 +29,12 @@ async function handleFollow(input: AP_Follow, req: Request) {
   if (!id) return;
 
   const user = await db.getUserByName(id);
-  if (!user) return;
+  if (!user) throw new Error(`User '${id}' not found`);
 
   const from = await parseUsername(input.actor);
-  const actor = await db.getActor(from);
+  const actor = await db.getActor(input.actor);
 
-  if (!actor) return;
+  if (!actor) throw new Error(`Actor '${input.actor}' not found`);
 
   console.log("save follow request to database");
   // @ts-ignore delete activitypub context
@@ -43,8 +42,6 @@ async function handleFollow(input: AP_Follow, req: Request) {
   const qid = await db.addFollowRequest({
     actor: actor.id,
     data: input,
-
-    // inbox field is used to store requester id.
     name: user.name,
   });
 
