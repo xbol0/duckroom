@@ -80,4 +80,14 @@ export const Migrations: MigrationFn[] = [
     db.queryArray(
       "CREATE TABLE IF NOT EXISTS follow_requests (id SERIAL PRIMARY KEY,actor TEXT NOT NULL,data JSONB NOT NULL,name TEXT NOT NULL)",
     ),
+
+  /** 2023-01-25 19:02  Create followers table */
+  (db) =>
+    db.queryArray(
+      "CREATE TABLE IF NOT EXISTS followers (id SERIAL PRIMARY KEY,name TEXT NOT NULL,actor TEXT NOT NULL,created_at TIMESTAMP NOT NULL DEFAULT current_timestamp)",
+    ),
+
+  /** 2023-01-25 19:24  Create index name for followers */
+  (db) =>
+    db.queryArray("CREATE INDEX IF NOT EXISTS name_idx ON followers (name)"),
 ];

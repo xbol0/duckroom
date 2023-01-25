@@ -26,6 +26,7 @@ async function handleAcceptCallback(cq: TgCallbackQuery, _: Request) {
     ]);
 
     if (!user || !actor) return;
+    await db.addFollower({ name: user.name, actor: actor.id });
     await acceptFollow(user, actor, request.data);
     console.log("send ap message success");
 

@@ -34,6 +34,9 @@ export interface DataProvider {
   addFollowRequest(data: FollowRequestInput): Promise<number>;
   getFollowRequest(id: number): Promise<FollowRequest | null>;
   delFollowRequest(id: number): Promise<void>;
+
+  addFollower(data: FollowInfo): Promise<void>;
+  delFollower(data: FollowInfo): Promise<void>;
 }
 
 export type MigrationFn = (db: pg.PoolClient) => Promise<unknown>;
@@ -100,4 +103,9 @@ export type FollowRequestInput = {
   name: string;
   actor: string;
   data: unknown;
+};
+
+export type FollowInfo = {
+  name: string;
+  actor: string;
 };

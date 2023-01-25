@@ -3,6 +3,7 @@ import {
   Actor,
   CreateUser,
   DataProvider,
+  FollowInfo,
   FollowRequest,
   FollowRequestInput,
   MigrationFn,
@@ -257,5 +258,35 @@ FROM actors WHERE id=$1 LIMIT 1",
         [id],
       )
     );
+  }
+
+  async delFollower(data: FollowInfo) {
+    await this.use(async (db) => {
+      const res = await db.queryArray(
+        "DELETE FROM followers WHERE name=$1 AND actor=$2 RETURNING 1",
+        [data.name, data.actor],
+      );
+      if (res.rows.length) {
+        await db.queryArray(
+          "UPDATE accounts SET followers=followers-1 WHERE name=$1",
+          [data.name],
+        );
+      }
+    });
+  }
+
+  async addFollower(data: FollowInfo) {
+    await this.use(async (db) => {
+      const res = await db.queryArray(
+        "INSERT INTO followers (name,actor) VALUES ($1,$2) ON CONFLICT DO NOTHING RETURING 1",
+        [data.name, data.actor],
+      );
+      if (res.rows.length) {
+        await db.queryArray(
+          "UPDATE accounts SET followers=followers+1 WHERE name=$1",
+          [data.name],
+        );
+      }
+    });
   }
 }
