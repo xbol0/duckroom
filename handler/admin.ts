@@ -14,14 +14,16 @@ export async function initBot(req: Request) {
   const me = await bot.getMe();
   console.log(me);
 
+  const u = new URL(req.url);
   await db.setSiteinfo({
     bot_id: me.id.toString(),
     bot_name: me.first_name,
     username: me.username,
+    origin: u.origin,
   });
   console.log("Update siteinfo successful.");
 
-  const url = body.url || `${new URL(req.url).origin}/webhook`;
+  const url = body.url || `${u.origin}/webhook`;
 
   console.log("Get bot webhook info...");
   const info = await bot.getWebhookInfo();
