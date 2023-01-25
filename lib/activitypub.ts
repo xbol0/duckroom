@@ -247,6 +247,8 @@ export async function parseUsername(id: string) {
 }
 
 export async function signAndSend(from: User, to: Actor, data: unknown) {
+  console.log("Sign and send activitypub data:");
+  console.log(data);
   const buf = new TextEncoder().encode(JSON.stringify(data));
   const hash = await crypto.subtle.digest("SHA-256", buf);
   const digest = "SHA-256=" + base64.encode(hash);
