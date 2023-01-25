@@ -78,7 +78,7 @@ export async function followers(req: Request) {
       "@context": [AP.ActivityStream],
       type: "OrderedCollectionPage",
       totalItems: total,
-      id: `${origin}/followers?id=${id}&next=`,
+      id: `${origin}/followers?id=${id}&next=${next}`,
       orderedItems: list,
       next: list.length
         ? `${origin}/followers?id=${id}&next=${lastItem}`
@@ -114,7 +114,7 @@ export async function outbox(req: Request) {
       "@context": [AP.ActivityStream],
       type: "OrderedCollectionPage",
       totalItems: total,
-      id: `${origin}/outbox?id=${id}&next=`,
+      id: `${origin}/outbox?id=${id}&next=${next}`,
       orderedItems: list,
       next: list.length
         ? `${origin}/outbox?id=${id}&next=${
