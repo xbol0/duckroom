@@ -278,7 +278,7 @@ FROM actors WHERE id=$1 LIMIT 1",
   async addFollower(data: FollowInfo) {
     await this.use(async (db) => {
       const res = await db.queryArray(
-        "INSERT INTO followers (name,actor) VALUES ($1,$2) ON CONFLICT DO NOTHING RETURING 1",
+        "INSERT INTO followers (name,actor) VALUES ($1,$2) ON CONFLICT DO NOTHING RETURNING 1",
         [data.name, data.actor],
       );
       if (res.rows.length) {
