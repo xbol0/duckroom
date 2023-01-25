@@ -37,6 +37,8 @@ export interface DataProvider {
 
   addFollower(data: FollowInfo): Promise<void>;
   delFollower(data: FollowInfo): Promise<void>;
+  getFollowerTotal(id: string): Promise<number>;
+  listFollowers(id: string, next: string): Promise<[string[], string]>;
 }
 
 export type MigrationFn = (db: pg.PoolClient) => Promise<unknown>;

@@ -16,6 +16,7 @@ Router.set("GET/file", file.getFile);
 Router.set("GET/user", ap.user);
 Router.set("GET/status", ap.status);
 Router.set("GET/outbox", ap.outbox);
+Router.set("GET/followers", ap.followers);
 
 Router.set("POST/webhook", webhook.webhook);
 Router.set("POST/init", admin.initBot);

@@ -63,6 +63,38 @@ export async function inbox(req: Request) {
   return respond(null, 202);
 }
 
+export async function followers(req: Request) {
+  const { id, origin } = getId(req);
+
+  const u = new URL(req.url);
+  const next = u.searchParams.get("next");
+
+  const total = Number(await db.getFollowerTotal(id));
+
+  if (typeof next === "string") {
+    const [list, lastItem] = await db.listFollowers(id, next);
+
+    return respond({
+      "@context": [AP.ActivityStream],
+      type: "OrderedCollectionPage",
+      totalItems: total,
+      id: `${origin}/followers?id=${id}&next=`,
+      orderedItems: list,
+      next: list.length
+        ? `${origin}/followers?id=${id}&next=${lastItem}`
+        : void 0,
+    });
+  } else {
+    return respond({
+      "@context": [AP.ActivityStream],
+      type: "OrderedCollection",
+      totalItems: total,
+      id: `${origin}/followers?id=${id}`,
+      first: `${origin}/followers?id=${id}&next=`,
+    });
+  }
+}
+
 export async function outbox(req: Request) {
   const { id, origin } = getId(req);
 

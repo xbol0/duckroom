@@ -289,4 +289,36 @@ FROM actors WHERE id=$1 LIMIT 1",
       }
     });
   }
+
+  async getFollowerTotal(id: string) {
+    return await this.use(async (db) => {
+      const res = await db.queryArray(
+        "SELECT count(*) FROM followers WHERE name=$1",
+        [id],
+      );
+      return res.rows[0][0] as number;
+    });
+  }
+
+  async listFollowers(id: string, next: string) {
+    return await this.use(async (db) => {
+      const res = next
+        ? await db.queryArray<[number, string]>(
+          "SELECT id,actor FROM followers WHERE name=$1 AND id>$2 ORDER BY created_at DESC LIMIT 10",
+          [id, next],
+        )
+        : await db.queryArray<[number, string]>(
+          "SELECT id,actor FROM followers WHERE name=$1 ORDER BY created_at DESC LIMIT 10",
+          [id],
+        );
+
+      if (!res.rows.length) {
+        return [[], ""];
+      }
+
+      const n = res.rows[res.rows.length - 1][0];
+      const list = res.rows.map((i) => i[1]);
+      return [list, n.toString()];
+    }) as [string[], string];
+  }
 }
