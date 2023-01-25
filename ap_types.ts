@@ -21,3 +21,10 @@ export type AP_Person = {
     publicKeyPem: string;
   };
 };
+
+export type AP_FollowRequest = {
+  id: string;
+  type: "Follow";
+  actor: string;
+  object: string;
+};

@@ -63,9 +63,21 @@ export const Migrations: MigrationFn[] = [
       "ALTER TABLE IF EXISTS accounts ADD COLUMN IF NOT EXISTS chat_id INT NOT NULL DEFAULT 0",
     ),
 
-  /** 2023-01-23 15:44  Add column chat_id to bigint for accounts */
+  /** 2023-01-23 15:44  Change column chat_id to bigint for accounts */
   (db) =>
     db.queryArray(
       "ALTER TABLE IF EXISTS accounts ALTER COLUMN chat_id TYPE BIGINT",
+    ),
+
+  /** 2023-01-23 15:44  Add column href for accounts */
+  (db) =>
+    db.queryArray(
+      "ALTER TABLE IF EXISTS accounts ADD COLUMN IF NOT EXISTS href TEXT NOT NULL DEFAULT ''",
+    ),
+
+  /** 2023-01-23 19:49  Create follow_requests table */
+  (db) =>
+    db.queryArray(
+      "CREATE TABLE IF NOT EXISTS follow_requests (id SERIAL PRIMARY KEY,actor TEXT NOT NULL,data JSONB NOT NULL,name TEXT NOT NULL)",
     ),
 ];

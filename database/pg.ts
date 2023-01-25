@@ -3,6 +3,8 @@ import {
   Actor,
   CreateUser,
   DataProvider,
+  FollowRequest,
+  FollowRequestInput,
   MigrationFn,
   OutboxInput,
   Siteinfo,
@@ -91,7 +93,7 @@ ON CONFLICT ("key") DO UPDATE SET "value"=$2',
     return await this.use(async (db) => {
       const res = await db.queryObject<User>(
 "SELECT id,tg_id,name,display_name,public_key,private_key, \
-avatar,stat,following,followers,statuses,chat_id FROM accounts WHERE tg_id=$1 LIMIT 1",
+avatar,stat,following,followers,statuses,chat_id,href FROM accounts WHERE tg_id=$1 LIMIT 1",
         [id],
       );
       if (!res.rows.length) return null;
@@ -103,7 +105,7 @@ avatar,stat,following,followers,statuses,chat_id FROM accounts WHERE tg_id=$1 LI
     return await this.use(async (db) => {
       const res = await db.queryObject<User>(
 "SELECT id,tg_id,name,display_name,public_key,private_key, \
-avatar,stat,following,followers,statuses,chat_id FROM accounts WHERE name=$1 LIMIT 1",
+avatar,stat,following,followers,statuses,chat_id,href FROM accounts WHERE name=$1 LIMIT 1",
         [name],
       );
       if (!res.rows.length) return null;
@@ -115,7 +117,7 @@ avatar,stat,following,followers,statuses,chat_id FROM accounts WHERE name=$1 LIM
     await this.use(async (db) => {
       await db.queryArray(
 "INSERT INTO accounts(tg_id,name,display_name,public_key,private_key,\
-avatar,chat_id) VALUES ($1,$2,$3,$4,$5,$6,$7) ON CONFLICT DO NOTHING",
+avatar,chat_id,href) VALUES ($1,$2,$3,$4,$5,$6,$7,$8) ON CONFLICT DO NOTHING",
         [
           data.tg_id,
           data.name,
@@ -124,6 +126,7 @@ avatar,chat_id) VALUES ($1,$2,$3,$4,$5,$6,$7) ON CONFLICT DO NOTHING",
           data.private_key,
           data.avatar,
           data.chat_id,
+          data.href,
         ],
       );
     });
@@ -221,6 +224,37 @@ FROM actors WHERE id=$1 LIMIT 1",
           data.shared_inbox,
           data.public_key,
         ],
+      )
+    );
+  }
+
+  async addFollowRequest(data: FollowRequestInput) {
+    return await this.use(async (db) => {
+      const res = await db.queryArray(
+        "INSERT INTO follow_requests (name,actor,data) VALUES ($1,$2,$3) RETURNING id",
+        [data.name, data.actor, data.data],
+      );
+      if (res.rows.length) return Number(res.rows[0][0]);
+      throw new Error("Add follow request fail");
+    });
+  }
+
+  async getFollowRequest(id: number) {
+    return await this.use(async (db) => {
+      const res = await db.queryObject<FollowRequest>(
+        "SELECT id,name,inbox,data FROM follow_requests WHERE id=$1 LIMIT 1",
+        [id],
+      );
+      if (res.rows.length) return res.rows[0];
+      return null;
+    });
+  }
+
+  async delFollowRequest(id: number) {
+    await this.use((db) =>
+      db.queryArray(
+        "DELETE FROM follow_requests WHERE id=$1",
+        [id],
       )
     );
   }

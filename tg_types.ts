@@ -32,6 +32,7 @@ export type TgCommandInput = {
 export type TgUpdate = {
   update_id: number;
   message?: TgMessage;
+  callback_query?: TgCallbackQuery;
 };
 
 export type TgMessage = {
@@ -44,6 +45,14 @@ export type TgMessage = {
   entities?: TgEntity[];
   caption_entities?: TgEntity[];
   photo?: TgPhotoSize[];
+};
+
+export type TgCallbackQuery = {
+  id: string;
+  from: TgUser;
+  message?: TgMessage;
+  chat_instance: string;
+  data?: string;
 };
 
 export type TgPhotoSize = {

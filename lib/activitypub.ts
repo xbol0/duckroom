@@ -1,7 +1,7 @@
 import { base64, ErrorRes, hex } from "../deps.ts";
 import * as AP from "../constant/activitypub.ts";
 import { db } from "../database/mod.ts";
-import { Actor } from "../types.ts";
+import { Actor, User } from "../types.ts";
 import { AP_Person } from "../ap_types.ts";
 
 export function newId() {
@@ -168,6 +168,41 @@ function parseSignature(str: string) {
   return { keyId, headers, sign };
 }
 
+// Decode user id and return user meta via webfinger
+// eg. @alice@xxx.com
+export async function decodeUserId(id: string) {
+  const [_, name, host] = id.split("@");
+  if (!name || !host) throw new Error("Invalid user id.");
+  const res = await fetch(
+    `https://${host}/.well-known/webfinger?resource=acct:${name}@${host}`,
+    { headers: { accept: "application/json" } },
+  );
+  if (res.status !== 200) {
+    throw new Error("Request fail, status: " + res.status);
+  }
+
+  const json = await res.json();
+  if (typeof json !== "object" || json === null) {
+    throw new Error("Invalid body");
+  }
+
+  if (!("links" in json)) {
+    throw new Error("Invalid body, not found links.");
+  }
+
+  if (!(json.links instanceof Array)) {
+    throw new Error("Invalid links format.");
+  }
+
+  const list = json.links as { type: string; href: string }[];
+  const f = list.find((i) => i.type === "application/activity+json");
+
+  if (!f) throw new Error("Not found activitypub link");
+
+  if (typeof f.href !== "string") throw new Error("Invalid href type");
+  return f.href;
+}
+
 async function getKeyOwner(keyId: string) {
   const json = await fetchActivity<AP_Person>(keyId);
 
@@ -209,4 +244,50 @@ export async function parseUsername(id: string) {
   if (!res) throw new Error(`Actor ${id} not found.`);
   const u = new URL(id);
   return `@${res.username}@${u.hostname}`;
+}
+
+export async function signAndSend(from: User, to: Actor, data: unknown) {
+  const buf = new TextEncoder().encode(JSON.stringify(data));
+  const hash = await crypto.subtle.digest("SHA-256", buf);
+  const digest = "SHA-256=" + base64.encode(hash);
+  const date = new Date().toUTCString();
+  const u = new URL(to.inbox);
+  const host = u.host;
+
+  const strToSign = [
+    `(request-target): post ${u.pathname}`,
+    `host: ${host}`,
+    `date: ${date}`,
+    `digest: ${digest}`,
+    `content-type: ${AP.ActivityContentType}`,
+  ].join("\n");
+  const key = await crypto.subtle.importKey(
+    "pkcs8",
+    from.private_key,
+    { name: "RSASSA-PKCS1-v1_5", hash: "SHA-256" },
+    true,
+    ["sign"],
+  );
+  const signBuf = await crypto.subtle.sign(
+    { name: "RSASSA-PKCS1-v1_5", hash: "SHA-256", saltLength: 32 },
+    key,
+    new TextEncoder().encode(strToSign),
+  );
+  const signature = base64.encode(signBuf);
+  const signPayload =
+    `keyId="${from.href}#main-key",algorithm="rsa-sha256",headers="(request-target) host date digest content-type",signature="${signature}"`;
+
+  const res = await fetch(to.inbox, {
+    method: "POST",
+    body: buf,
+    headers: {
+      "content-type": AP.ActivityContentType,
+      date,
+      host,
+      signature: signPayload,
+      digest,
+    },
+  });
+  console.log(res.status);
+  console.log(await res.text());
 }

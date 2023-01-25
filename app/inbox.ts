@@ -33,14 +33,29 @@ async function handleFollow(input: AP_Follow, req: Request) {
   if (!user) return;
 
   const from = await parseUsername(input.actor);
+  const actor = await db.getActor(from);
+
+  if (!actor) return;
+
+  console.log("save follow request to database");
+  // @ts-ignore delete activitypub context
+  delete input["@context"];
+  const qid = await db.addFollowRequest({
+    actor: actor.id,
+    data: input,
+
+    // inbox field is used to store requester id.
+    name: user.name,
+  });
+
   await Bot.sendMessage({
     chat_id: Number(user.chat_id),
     text: `${from} requests to follow you.`,
     reply_markup: {
       inline_keyboard: [
         [
-          { text: "Accept", callback_data: "accept" },
-          { text: "Reject", callback_data: "reject" },
+          { text: "Accept", callback_data: `accept:${qid}` },
+          { text: "Reject", callback_data: `reject:${qid}` },
         ],
       ],
     },

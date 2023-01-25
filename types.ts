@@ -1,5 +1,7 @@
 import { pg } from "./deps.ts";
 export * from "./tg_types.ts";
+
+import * as AP from "./ap_types.ts";
 export * from "./ap_types.ts";
 
 export type Handler = (q: Request) => Response | Promise<Response>;
@@ -28,6 +30,10 @@ export interface DataProvider {
 
   getActor(id: string): Promise<Actor | null>;
   setActor(data: Actor): Promise<void>;
+
+  addFollowRequest(data: FollowRequestInput): Promise<number>;
+  getFollowRequest(id: number): Promise<FollowRequest | null>;
+  delFollowRequest(id: number): Promise<void>;
 }
 
 export type MigrationFn = (db: pg.PoolClient) => Promise<unknown>;
@@ -44,6 +50,8 @@ export type User = {
   followers: number;
   statuses: number;
   public_key: string;
+  private_key: Uint8Array;
+  href: string;
 };
 export type CreateUser = {
   tg_id: number;
@@ -53,6 +61,7 @@ export type CreateUser = {
   public_key: string;
   private_key: Uint8Array;
   avatar: string;
+  href: string;
 };
 
 export type AdminInitInput = {
@@ -85,4 +94,16 @@ export type Actor = {
   inbox: string;
   outbox: string;
   shared_inbox: string;
+};
+
+export type FollowRequest = {
+  id: number;
+  name: string;
+  actor: string;
+  data: AP.AP_FollowRequest;
+};
+export type FollowRequestInput = {
+  name: string;
+  actor: string;
+  data: unknown;
 };

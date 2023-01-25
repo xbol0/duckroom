@@ -2,6 +2,7 @@ import { getSession } from "../../lib/session.ts";
 import { TgMessage } from "../../tg_types.ts";
 import * as Bot from "../../lib/bot.ts";
 import { RegisteredCommands } from "../../constant/commands.ts";
+import { db } from "../../database/mod.ts";
 
 export async function refreshCommands(
   _: string,
@@ -23,6 +24,9 @@ export async function refreshCommands(
       scope: { type: "chat", chat_id: msg.chat.id },
     });
   }
+
+  console.log(`Update ${msg.from.id} chat_id`);
+  await db.updateUserMeta(msg.from.id, "chat_id", msg.chat.id);
 
   await Bot.sendMessage({
     chat_id: msg.chat.id,

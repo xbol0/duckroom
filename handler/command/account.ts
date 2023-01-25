@@ -17,15 +17,16 @@ eg. /bind alice",
   }
 
   try {
+    const u = new URL(req.url);
     await Account.createAccount({
       name,
       display_name: name,
       avatar: "",
       tg_id: msg.from.id,
       chat_id: msg.chat.id,
+      href: `${u.origin}/user?id=${name}`,
     });
 
-    const u = new URL(req.url);
     const id = `@${name}@${u.hostname}`;
     await Bot.sendMessage({
       chat_id: msg.chat.id,
